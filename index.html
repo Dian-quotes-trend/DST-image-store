@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DST Gallery | Visual Showcase</title>
+    <title>DST Gallery | Visual Art Community</title>
+    
     <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <style>
-        /* CSS Reset & Variables */
+        /* ===== CSS VARIABLES ===== */
         :root {
             --primary: #6c63ff;
             --primary-dark: #5a52d5;
@@ -24,7 +27,7 @@
             --bg-secondary: #141414;
             --bg-card: #1a1a1a;
             --bg-hover: #2a2a2a;
-            --bg-modal: rgba(0, 0, 0, 0.9);
+            --bg-modal: rgba(0, 0, 0, 0.95);
             
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
@@ -51,6 +54,7 @@
             --max-width: 1400px;
         }
         
+        /* ===== RESET & BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -70,7 +74,11 @@
             min-height: 100vh;
         }
         
-        /* Utility Classes */
+        /* ===== UTILITY CLASSES ===== */
+        .hidden {
+            display: none !important;
+        }
+        
         .container {
             width: 100%;
             max-width: var(--max-width);
@@ -78,15 +86,12 @@
             padding: 0 20px;
         }
         
-        .hidden {
-            display: none !important;
-        }
-        
         .loading {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 300px;
+            color: var(--text-muted);
         }
         
         .spinner {
@@ -96,6 +101,7 @@
             border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-right: 1rem;
         }
         
         @keyframes spin {
@@ -103,7 +109,147 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Header */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: none;
+            text-decoration: none;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), #8a84ff);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #ff2e43;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 15px 20px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease;
+            transform: translateX(0);
+        }
+        
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+        
+        .toast.success {
+            border-left-color: var(--success);
+        }
+        
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+        
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 0 0 10px;
+        }
+        
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* ===== HEADER ===== */
         header {
             position: fixed;
             top: 0;
@@ -141,7 +287,7 @@
             font-size: 28px;
         }
         
-        /* Search Bar */
+        /* ===== SEARCH BAR ===== */
         .search-container {
             flex: 1;
             max-width: 500px;
@@ -175,7 +321,7 @@
             color: var(--text-muted);
         }
         
-        /* Navigation */
+        /* ===== NAVIGATION ===== */
         .nav-links {
             display: flex;
             align-items: center;
@@ -205,7 +351,7 @@
             background: rgba(108, 99, 255, 0.1);
         }
         
-        /* User Menu */
+        /* ===== USER MENU ===== */
         .user-menu {
             display: flex;
             align-items: center;
@@ -227,9 +373,14 @@
             transition: var(--transition-fast);
         }
         
-        .upload-btn:hover {
+        .upload-btn:hover:not(:disabled) {
             background: var(--primary-dark);
             transform: translateY(-2px);
+        }
+        
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .notification-btn {
@@ -241,6 +392,10 @@
             position: relative;
             padding: 8px;
             border-radius: var(--radius-md);
+        }
+        
+        .notification-btn:hover {
+            background: var(--bg-hover);
         }
         
         .notification-badge {
@@ -265,9 +420,15 @@
             object-fit: cover;
             border: 2px solid var(--primary);
             cursor: pointer;
+            transition: var(--transition-fast);
         }
         
-        /* Dropdown Menu */
+        .user-avatar:hover {
+            border-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        /* ===== DROPDOWN MENU ===== */
         .dropdown {
             position: relative;
         }
@@ -305,6 +466,7 @@
             font-size: 14px;
             border-bottom: 1px solid var(--border-color);
             transition: var(--transition-fast);
+            cursor: pointer;
         }
         
         .dropdown-item:hover {
@@ -316,14 +478,14 @@
             border-bottom: none;
         }
         
-        /* Main Layout */
+        /* ===== MAIN LAYOUT ===== */
         .main-content {
             margin-top: var(--header-height);
             display: flex;
             min-height: calc(100vh - var(--header-height));
         }
         
-        /* Sidebar */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--bg-secondary);
@@ -368,6 +530,7 @@
             margin-bottom: 5px;
             font-size: 14px;
             transition: var(--transition-fast);
+            cursor: pointer;
         }
         
         .sidebar-link:hover,
@@ -380,7 +543,7 @@
             color: var(--primary);
         }
         
-        /* Main Area */
+        /* ===== CONTENT AREA ===== */
         .content-area {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -389,7 +552,7 @@
             background: var(--bg-primary);
         }
         
-        /* Page Headers */
+        /* ===== PAGE HEADERS ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -407,7 +570,7 @@
             -webkit-text-fill-color: transparent;
         }
         
-        /* Grid Layouts */
+        /* ===== IMAGES GRID ===== */
         .images-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -422,6 +585,7 @@
             transition: var(--transition-base);
             border: 1px solid var(--border-color);
             position: relative;
+            cursor: pointer;
         }
         
         .image-card:hover {
@@ -489,7 +653,7 @@
             gap: 8px;
         }
         
-        /* Image Actions */
+        /* ===== IMAGE ACTIONS ===== */
         .image-actions {
             position: absolute;
             top: 15px;
@@ -526,7 +690,12 @@
             transform: scale(1.1);
         }
         
-        /* Stats Bar */
+        .action-btn.liked {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* ===== STATS BAR ===== */
         .image-stats {
             display: flex;
             gap: 15px;
@@ -543,165 +712,7 @@
             font-size: 13px;
         }
         
-        .stat.liked {
-            color: var(--danger);
-        }
-        
-        /* For You Feed */
-        .feed {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .feed-item {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        
-        .feed-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .feed-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .feed-user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .feed-user-info h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        
-        .feed-user-info p {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        
-        .feed-time {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .feed-image {
-            width: 100%;
-            max-height: 600px;
-            object-fit: contain;
-            background: var(--bg-secondary);
-        }
-        
-        .feed-actions {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .feed-stats {
-            padding: 15px 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .feed-comments {
-            padding: 20px;
-        }
-        
-        /* Comment Section */
-        .comment {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .comment-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .comment-content {
-            flex: 1;
-        }
-        
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
-        }
-        
-        .comment-author {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .comment-time {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .comment-text {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .comment-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 8px;
-        }
-        
-        .comment-action {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .comment-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .comment-input {
-            flex: 1;
-            padding: 12px 15px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-        
-        .comment-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        /* Profile Page */
+        /* ===== PROFILE PAGE ===== */
         .profile-header {
             position: relative;
             margin-bottom: 30px;
@@ -713,6 +724,7 @@
             width: 100%;
             height: 300px;
             object-fit: cover;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
         }
         
         .profile-info {
@@ -790,7 +802,7 @@
             gap: 15px;
         }
         
-        /* Modal System */
+        /* ===== MODAL SYSTEM ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -873,7 +885,7 @@
             padding: 30px;
         }
         
-        /* Form Styles */
+        /* ===== FORM STYLES ===== */
         .form-group {
             margin-bottom: 20px;
         }
@@ -907,70 +919,7 @@
             resize: vertical;
         }
         
-        /* Button Styles */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            border: none;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--bg-hover);
-            border-color: var(--primary);
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #ff2e43;
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* File Upload */
+        /* ===== FILE UPLOAD ===== */
         .file-upload {
             border: 2px dashed var(--border-color);
             border-radius: var(--radius-lg);
@@ -1002,96 +951,7 @@
             color: var(--text-secondary);
         }
         
-        /* Tag System */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .tag {
-            background: rgba(108, 99, 255, 0.1);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: var(--radius-full);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-        
-        .tag:hover {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .tag-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        /* Social Sharing */
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .share-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-        
-        .share-btn.facebook { background: #1877f2; }
-        .share-btn.twitter { background: #1da1f2; }
-        .share-btn.pinterest { background: #e60023; }
-        .share-btn.whatsapp { background: #25d366; }
-        .share-btn.link { background: var(--text-muted); }
-        
-        .share-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 40px;
-        }
-        
-        .page-link {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-md);
-            background: var(--bg-card);
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition-fast);
-        }
-        
-        .page-link:hover,
-        .page-link.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* Footer */
+        /* ===== FOOTER ===== */
         footer {
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
@@ -1143,7 +1003,7 @@
             font-size: 14px;
         }
         
-        /* Responsive Design */
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -1156,10 +1016,6 @@
             
             .content-area {
                 margin-left: 0;
-            }
-            
-            .menu-toggle {
-                display: block;
             }
         }
         
@@ -1189,6 +1045,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 margin-top: -40px;
+                padding: 0 20px;
             }
             
             .profile-avatar {
@@ -1222,7 +1079,7 @@
             }
         }
         
-        /* Custom Scrollbar */
+        /* ===== CUSTOM SCROLLBAR ===== */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -1240,9 +1097,112 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
+        
+        /* ===== UPLOAD PREVIEW ===== */
+        .upload-preview-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .upload-preview-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+        
+        .upload-preview-info {
+            flex: 1;
+        }
+        
+        .upload-preview-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .upload-preview-size {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .upload-preview-status {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending { color: var(--text-muted); }
+        .status-uploading { color: var(--primary); }
+        .status-success { color: var(--success); }
+        .status-error { color: var(--danger); }
+        
+        /* ===== TAGS ===== */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* ===== SOCIAL SHARING ===== */
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: none;
+        }
+        
+        .share-btn.facebook { background: #1877f2; }
+        .share-btn.twitter { background: #1da1f2; }
+        .share-btn.pinterest { background: #e60023; }
+        .share-btn.whatsapp { background: #25d366; }
+        .share-btn.link { background: var(--text-muted); }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
     <!-- Header -->
     <header>
         <div class="header-content">
@@ -1280,14 +1240,9 @@
             
             <!-- User Menu -->
             <div class="user-menu">
-                <button class="upload-btn" id="uploadBtn">
+                <button class="upload-btn" id="uploadBtn" data-requires-auth>
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Upload</span>
-                </button>
-                
-                <button class="notification-btn" id="notificationBtn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge hidden">0</span>
                 </button>
                 
                 <div class="dropdown">
@@ -1371,37 +1326,22 @@
         
         <div class="sidebar-section">
             <div class="sidebar-title">Your Content</div>
-            <a href="#my-images" class="sidebar-link" data-page="my-images">
+            <a href="#my-images" class="sidebar-link" data-page="my-images" data-requires-auth>
                 <i class="fas fa-image"></i>
                 <span>My Images</span>
-                <span class="badge" id="myImagesCount">0</span>
             </a>
-            <a href="#my-albums" class="sidebar-link" data-page="my-albums">
+            <a href="#my-albums" class="sidebar-link" data-page="my-albums" data-requires-auth>
                 <i class="fas fa-folder"></i>
                 <span>My Albums</span>
-                <span class="badge" id="myAlbumsCount">0</span>
             </a>
-            <a href="#liked" class="sidebar-link" data-page="liked">
+            <a href="#liked" class="sidebar-link" data-page="liked" data-requires-auth>
                 <i class="fas fa-heart"></i>
                 <span>Liked</span>
-                <span class="badge" id="likedCount">0</span>
             </a>
-            <a href="#following" class="sidebar-link" data-page="following">
-                <i class="fas fa-user-friends"></i>
-                <span>Following</span>
-                <span class="badge" id="followingCount">0</span>
-            </a>
-        </div>
-        
-        <div class="sidebar-section">
-            <div class="sidebar-title">Tags</div>
-            <div class="tags-container" id="popularTags">
-                <!-- Popular tags will be loaded here -->
-            </div>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
         <div class="content-area" id="contentArea">
             <!-- Home Page (Default) -->
@@ -1412,42 +1352,41 @@
                         <button class="btn btn-outline active" data-filter="all">All</button>
                         <button class="btn btn-outline" data-filter="trending">Trending</button>
                         <button class="btn btn-outline" data-filter="new">New</button>
-                        <button class="btn btn-outline" data-filter="popular">Popular</button>
                     </div>
                 </div>
                 
                 <div class="images-grid" id="homeImagesGrid">
-                    <!-- Images will be loaded here -->
+                    <!-- Images will load here -->
                 </div>
                 
-                <div class="loading" id="homeLoading">
+                <div class="loading hidden" id="homeLoading">
                     <div class="spinner"></div>
+                    <span>Loading images...</span>
                 </div>
                 
-                <div class="pagination" id="homePagination">
-                    <!-- Pagination will be added here -->
+                <div id="noImagesMessage" class="hidden" style="text-align: center; padding: 50px; color: var(--text-muted);">
+                    <i class="fas fa-image" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3>No images yet</h3>
+                    <p>Be the first to upload an image!</p>
                 </div>
             </div>
             
             <!-- Profile Page -->
             <div id="profilePage" class="page-content hidden">
                 <div class="profile-header">
-                    <img src="https://files.catbox.moe/vz7yc2.jpg" class="profile-banner" id="profileBanner" alt="Banner">
+                    <div class="profile-banner" id="profileBanner"></div>
                     <div class="profile-info">
                         <div class="profile-avatar-container">
                             <img src="https://ui-avatars.com/api/?name=User&background=6c63ff&color=fff" 
                                  class="profile-avatar" 
                                  id="profileAvatarLarge"
                                  alt="Profile Picture">
-                            <button class="btn btn-primary" id="editAvatarBtn">
-                                <i class="fas fa-camera"></i>
-                            </button>
                         </div>
                         
                         <div class="profile-details">
-                            <h1 class="profile-name" id="profileDisplayName">User Name</h1>
+                            <h1 class="profile-name" id="profileDisplayName">Loading...</h1>
                             <p class="profile-username" id="profileUsername">@username</p>
-                            <p class="profile-bio" id="profileBio">No bio yet. Click edit to add a bio.</p>
+                            <p class="profile-bio" id="profileBio">No bio yet</p>
                             
                             <div class="profile-stats">
                                 <div class="profile-stat">
@@ -1457,14 +1396,6 @@
                                 <div class="profile-stat">
                                     <div class="profile-stat-value" id="statAlbums">0</div>
                                     <div class="profile-stat-label">Albums</div>
-                                </div>
-                                <div class="profile-stat">
-                                    <div class="profile-stat-value" id="statFollowers">0</div>
-                                    <div class="profile-stat-label">Followers</div>
-                                </div>
-                                <div class="profile-stat">
-                                    <div class="profile-stat-value" id="statFollowing">0</div>
-                                    <div class="profile-stat-label">Following</div>
                                 </div>
                                 <div class="profile-stat">
                                     <div class="profile-stat-value" id="statLikes">0</div>
@@ -1477,29 +1408,23 @@
                                     <i class="fas fa-edit"></i>
                                     <span>Edit Profile</span>
                                 </button>
-                                <button class="btn btn-secondary" id="shareProfileBtn">
-                                    <i class="fas fa-share-alt"></i>
-                                    <span>Share</span>
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="profile-tabs">
+                <div class="profile-tabs" style="display: flex; gap: 10px; margin-bottom: 30px;">
                     <button class="btn btn-outline active" data-tab="profile-images">Images</button>
                     <button class="btn btn-outline" data-tab="profile-albums">Albums</button>
-                    <button class="btn btn-outline" data-tab="profile-liked">Liked</button>
-                    <button class="btn btn-outline" data-tab="profile-following">Following</button>
                 </div>
                 
-                <div class="tab-content">
-                    <div class="tab-pane active" id="profile-images">
-                        <div class="images-grid" id="profileImagesGrid">
-                            <!-- User's images will be loaded here -->
-                        </div>
-                    </div>
-                    <!-- Other tabs will be similar -->
+                <div id="profileImagesGrid" class="images-grid">
+                    <!-- User's images will load here -->
+                </div>
+                
+                <div class="loading hidden" id="profileLoading">
+                    <div class="spinner"></div>
+                    <span>Loading profile...</span>
                 </div>
             </div>
             
@@ -1507,11 +1432,16 @@
             <div id="forYouPage" class="page-content hidden">
                 <div class="page-header">
                     <h1 class="page-title">For You</h1>
-                    <p class="page-subtitle">Personalized recommendations based on your interests</p>
+                    <p class="page-subtitle">Personalized recommendations</p>
                 </div>
                 
-                <div class="feed" id="forYouFeed">
-                    <!-- Personalized feed will be loaded here -->
+                <div class="images-grid" id="forYouGrid">
+                    <!-- Personalized recommendations will load here -->
+                </div>
+                
+                <div class="loading hidden" id="forYouLoading">
+                    <div class="spinner"></div>
+                    <span>Loading recommendations...</span>
                 </div>
             </div>
             
@@ -1521,29 +1451,39 @@
                     <h1 class="page-title">About DST Gallery</h1>
                 </div>
                 
-                <div class="about-content">
-                    <div class="about-section">
-                        <h2>Our Mission</h2>
-                        <p>DST Gallery is a platform for visual creators to showcase their work, connect with other artists, and build their online presence. We believe in making art accessible to everyone.</p>
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <div style="margin-bottom: 40px;">
+                        <h2 style="margin-bottom: 15px; color: var(--primary);">Our Mission</h2>
+                        <p style="font-size: 16px; line-height: 1.8; color: var(--text-secondary);">
+                            DST Gallery is a platform for visual creators to showcase their work, connect with other artists, 
+                            and build their online presence. We believe in making art accessible to everyone.
+                        </p>
                     </div>
                     
-                    <div class="about-section">
-                        <h2>Features</h2>
-                        <ul>
-                            <li>📸 Upload and organize images in albums</li>
-                            <li>❤️ Like and comment on images</li>
-                            <li>🔍 Advanced search by tags, colors, and content</li>
-                            <li>👥 Follow other artists and build your network</li>
-                            <li>🔒 Public and private albums</li>
-                            <li>📱 Responsive design for all devices</li>
-                            <li>🛡️ Secure and reliable image hosting</li>
+                    <div style="margin-bottom: 40px;">
+                        <h2 style="margin-bottom: 15px; color: var(--primary);">Features</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                                Upload and organize images in albums
+                            </li>
+                            <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                                Like and comment on images
+                            </li>
+                            <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                                Advanced search by tags and content
+                            </li>
+                            <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                                Public and private albums
+                            </li>
+                            <li style="padding: 10px 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                                Responsive design for all devices
+                            </li>
                         </ul>
-                    </div>
-                    
-                    <div class="about-section">
-                        <h2>Contact</h2>
-                        <p>Have questions or feedback? Reach out to us:</p>
-                        <p>Email: support@dstgallery.com</p>
                     </div>
                 </div>
             </div>
@@ -1555,14 +1495,13 @@
                     <p class="page-subtitle">We'd love to hear from you</p>
                 </div>
                 
-                <div class="feedback-form">
+                <div style="max-width: 600px; margin: 0 auto;">
                     <div class="form-group">
                         <label class="form-label">Feedback Type</label>
                         <select class="form-control" id="feedbackType">
                             <option value="suggestion">Suggestion</option>
                             <option value="bug">Bug Report</option>
                             <option value="feature">Feature Request</option>
-                            <option value="other">Other</option>
                         </select>
                     </div>
                     
@@ -1574,18 +1513,7 @@
                     <div class="form-group">
                         <label class="form-label">Message</label>
                         <textarea class="form-control form-textarea" id="feedbackMessage" 
-                                  placeholder="Please provide details..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Rating (Optional)</label>
-                        <div class="rating-stars">
-                            <i class="fas fa-star" data-rating="1"></i>
-                            <i class="fas fa-star" data-rating="2"></i>
-                            <i class="fas fa-star" data-rating="3"></i>
-                            <i class="fas fa-star" data-rating="4"></i>
-                            <i class="fas fa-star" data-rating="5"></i>
-                        </div>
+                                  placeholder="Please provide details..." rows="6"></textarea>
                     </div>
                     
                     <button class="btn btn-primary" id="submitFeedbackBtn">
@@ -1599,14 +1527,19 @@
             <div id="albumsPage" class="page-content hidden">
                 <div class="page-header">
                     <h1 class="page-title">Albums</h1>
-                    <button class="btn btn-primary" id="createAlbumBtn">
+                    <button class="btn btn-primary" id="createAlbumBtn" data-requires-auth>
                         <i class="fas fa-plus"></i>
                         <span>Create Album</span>
                     </button>
                 </div>
                 
-                <div class="albums-grid" id="albumsGrid">
-                    <!-- Albums will be loaded here -->
+                <div class="images-grid" id="albumsGrid">
+                    <!-- Albums will load here -->
+                </div>
+                
+                <div class="loading hidden" id="albumsLoading">
+                    <div class="spinner"></div>
+                    <span>Loading albums...</span>
                 </div>
             </div>
         </div>
@@ -1648,36 +1581,9 @@
                                   placeholder="Optional description"></textarea>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Tags</label>
-                        <div class="tag-input">
-                            <input type="text" class="form-control" id="tagInput" placeholder="Add tags...">
-                            <button class="btn btn-primary" id="addTagBtn">Add</button>
-                        </div>
-                        <div class="tags-container" id="uploadTags">
-                            <!-- Tags will be added here -->
-                        </div>
-                    </div>
+                    <div class="upload-preview" id="uploadPreview" style="margin-bottom: 20px;"></div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Privacy</label>
-                        <div class="privacy-options">
-                            <label class="radio-label">
-                                <input type="radio" name="privacy" value="public" checked>
-                                <span>Public (Everyone can see)</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="privacy" value="private">
-                                <span>Private (Only you can see)</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="upload-preview" id="uploadPreview">
-                        <!-- Preview will be shown here -->
-                    </div>
-                    
-                    <button class="btn btn-primary btn-block" id="startUploadBtn">
+                    <button class="btn btn-primary" id="startUploadBtn" style="width: 100%;">
                         <i class="fas fa-upload"></i>
                         <span>Upload Images</span>
                     </button>
@@ -1706,140 +1612,17 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Cover Image</label>
-                    <input type="file" class="form-control" id="albumCover" accept="image/*">
-                </div>
-                
-                <div class="form-group">
                     <label class="form-label">Privacy</label>
                     <select class="form-control" id="albumPrivacy">
                         <option value="public">Public (Everyone can see)</option>
                         <option value="private">Private (Only you can see)</option>
-                        <option value="unlisted">Unlisted (Only people with link)</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Permissions</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="allowComments" checked>
-                            <span>Allow comments</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="allowDownloads" checked>
-                            <span>Allow downloads</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="allowSharing" checked>
-                            <span>Allow sharing</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary btn-block" id="saveAlbumBtn">
+                <button class="btn btn-primary" id="saveAlbumBtn" style="width: 100%;">
                     <i class="fas fa-save"></i>
                     <span>Create Album</span>
                 </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Image Detail Modal -->
-    <div class="modal-overlay" id="imageModal">
-        <div class="modal" style="max-width: 1000px;">
-            <div class="modal-header">
-                <h2 class="modal-title" id="imageModalTitle">Image Details</h2>
-                <button class="modal-close" data-modal="imageModal">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 0;">
-                <div class="image-modal-content">
-                    <div class="image-modal-left">
-                        <img id="modalImage" src="" alt="Image" style="width: 100%; height: auto;">
-                    </div>
-                    <div class="image-modal-right">
-                        <div class="image-modal-info">
-                            <div class="image-modal-user">
-                                <img id="modalUserAvatar" src="" alt="User" class="feed-user-avatar">
-                                <div>
-                                    <h4 id="modalUserName">User</h4>
-                                    <p id="modalUserUsername">@username</p>
-                                </div>
-                                <button class="btn btn-outline" id="followModalUserBtn">Follow</button>
-                            </div>
-                            
-                            <div class="image-modal-stats">
-                                <div class="stat">
-                                    <i class="fas fa-heart"></i>
-                                    <span id="modalLikesCount">0</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-eye"></i>
-                                    <span id="modalViewsCount">0</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-download"></i>
-                                    <span id="modalDownloadsCount">0</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-comment"></i>
-                                    <span id="modalCommentsCount">0</span>
-                                </div>
-                            </div>
-                            
-                            <div class="image-modal-actions">
-                                <button class="btn btn-primary" id="likeModalBtn">
-                                    <i class="fas fa-heart"></i>
-                                    <span>Like</span>
-                                </button>
-                                <button class="btn btn-secondary" id="downloadModalBtn">
-                                    <i class="fas fa-download"></i>
-                                    <span>Download</span>
-                                </button>
-                                <div class="share-buttons">
-                                    <button class="share-btn facebook" title="Share on Facebook">
-                                        <i class="fab fa-facebook-f"></i>
-                                    </button>
-                                    <button class="share-btn twitter" title="Share on Twitter">
-                                        <i class="fab fa-twitter"></i>
-                                    </button>
-                                    <button class="share-btn pinterest" title="Share on Pinterest">
-                                        <i class="fab fa-pinterest"></i>
-                                    </button>
-                                    <button class="share-btn whatsapp" title="Share on WhatsApp">
-                                        <i class="fab fa-whatsapp"></i>
-                                    </button>
-                                    <button class="share-btn link" title="Copy Link" id="copyLinkBtn">
-                                        <i class="fas fa-link"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="image-modal-description">
-                                <h4>Description</h4>
-                                <p id="modalDescription">No description provided.</p>
-                            </div>
-                            
-                            <div class="image-modal-tags">
-                                <h4>Tags</h4>
-                                <div class="tags-container" id="modalTags">
-                                    <!-- Tags will be added here -->
-                                </div>
-                            </div>
-                            
-                            <div class="image-modal-comments">
-                                <h4>Comments</h4>
-                                <div class="comments-list" id="modalComments">
-                                    <!-- Comments will be loaded here -->
-                                </div>
-                                <div class="comment-form">
-                                    <input type="text" class="comment-input" placeholder="Add a comment..." id="commentInput">
-                                    <button class="btn btn-primary" id="submitCommentBtn">Post</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1869,16 +1652,6 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Website</label>
-                    <input type="url" class="form-control" id="editWebsite" placeholder="https://">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Location</label>
-                    <input type="text" class="form-control" id="editLocation" placeholder="City, Country">
-                </div>
-                
-                <div class="form-group">
                     <label class="form-label">Profile Picture</label>
                     <input type="file" class="form-control" id="editAvatar" accept="image/*">
                 </div>
@@ -1888,17 +1661,7 @@
                     <input type="file" class="form-control" id="editBanner" accept="image/*">
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Privacy</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="editIsPrivate">
-                            <span>Private Account (Only followers can see your content)</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary btn-block" id="saveProfileBtn">
+                <button class="btn btn-primary" id="saveProfileBtn" style="width: 100%;">
                     <i class="fas fa-save"></i>
                     <span>Save Changes</span>
                 </button>
@@ -1906,7 +1669,7 @@
         </div>
     </div>
     
-    <!-- Login/Signup Modal -->
+    <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
         <div class="modal" style="max-width: 500px;">
             <div class="modal-header">
@@ -1914,15 +1677,15 @@
                 <button class="modal-close" data-modal="authModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" data-tab="login">Login</button>
-                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <button class="auth-tab active" data-tab="login" style="flex: 1; padding: 15px; background: none; border: none; color: var(--text-primary); font-weight: 600; cursor: pointer; border-bottom: 3px solid var(--primary);">Login</button>
+                    <button class="auth-tab" data-tab="signup" style="flex: 1; padding: 15px; background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer;">Sign Up</button>
                 </div>
                 
-                <div class="auth-form active" id="loginForm">
+                <div id="loginForm">
                     <div class="form-group">
-                        <label class="form-label">Email or Username</label>
-                        <input type="text" class="form-control" id="loginEmail" placeholder="you@example.com">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com">
                     </div>
                     
                     <div class="form-group">
@@ -1930,28 +1693,13 @@
                         <input type="password" class="form-control" id="loginPassword" placeholder="Your password">
                     </div>
                     
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="rememberMe">
-                            <span>Remember me</span>
-                        </label>
-                    </div>
-                    
-                    <button class="btn btn-primary btn-block" id="loginBtn">
+                    <button class="btn btn-primary" id="loginBtn" style="width: 100%; margin-top: 20px;">
                         <i class="fas fa-sign-in-alt"></i>
                         <span>Login</span>
                     </button>
-                    
-                    <div class="auth-divider">
-                        <span>or</span>
-                    </div>
-                    
-                    <p class="auth-switch">
-                        Don't have an account? <a href="#" data-switch="signup">Sign up</a>
-                    </p>
                 </div>
                 
-                <div class="auth-form hidden" id="signupForm">
+                <div id="signupForm" class="hidden">
                     <div class="form-group">
                         <label class="form-label">Username</label>
                         <input type="text" class="form-control" id="signupUsername" placeholder="Choose a username">
@@ -1967,45 +1715,10 @@
                         <input type="password" class="form-control" id="signupPassword" placeholder="Create a password">
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="signupConfirmPassword" placeholder="Confirm password">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="acceptTerms" checked>
-                            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-                        </label>
-                    </div>
-                    
-                    <button class="btn btn-primary btn-block" id="signupBtn">
+                    <button class="btn btn-primary" id="signupBtn" style="width: 100%; margin-top: 20px;">
                         <i class="fas fa-user-plus"></i>
                         <span>Create Account</span>
                     </button>
-                    
-                    <div class="auth-divider">
-                        <span>or</span>
-                    </div>
-                    
-                    <p class="auth-switch">
-                        Already have an account? <a href="#" data-switch="login">Login</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Notification Modal -->
-    <div class="modal-overlay" id="notificationModal">
-        <div class="modal" style="max-width: 400px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Notifications</h2>
-                <button class="modal-close" data-modal="notificationModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="notifications-list" id="notificationsList">
-                    <!-- Notifications will be loaded here -->
                 </div>
             </div>
         </div>
@@ -2016,7 +1729,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>DST Gallery</h3>
-                <p>A platform for visual creators to showcase their work and connect with the community.</p>
+                <p>A platform for visual creators to showcase their work.</p>
             </div>
             
             <div class="footer-section">
@@ -2025,149 +1738,118 @@
                     <li><a href="#home">Home</a></li>
                     <li><a href="#explore">Explore</a></li>
                     <li><a href="#foryou">For You</a></li>
-                    <li><a href="#trending">Trending</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h3>Community</h3>
-                <ul class="footer-links">
-                    <li><a href="#featured">Featured Artists</a></li>
-                    <li><a href="#guidelines">Community Guidelines</a></li>
-                    <li><a href="#blog">Blog</a></li>
-                    <li><a href="#forum">Forum</a></li>
+                    <li><a href="#about">About</a></li>
                 </ul>
             </div>
             
             <div class="footer-section">
                 <h3>Support</h3>
                 <ul class="footer-links">
-                    <li><a href="#help">Help Center</a></li>
                     <li><a href="#feedback">Feedback</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#help">Help</a></li>
                 </ul>
             </div>
         </div>
         
         <div class="copyright">
-            <p>&copy; 2024 DST Gallery. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
+            <p>&copy; 2024 DST Gallery. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
         // ============================================
-        // CONFIGURATION & INITIALIZATION
+        // CONFIGURATION
         // ============================================
-        
         const SUPABASE_URL = 'https://lhdqfvjndbyccvubkxsk.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZHFmdmpuZGJ5Y2N2dWJreHNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1Mzk1NDcsImV4cCI6MjA4MTExNTU0N30.4up4cheYoEUv9AZF0ATxJ_3LCfS8byCtmwVRfnnS0Eo';
         
-        // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Application state
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
         let currentUser = null;
         let currentPage = 'home';
-        let currentImage = null;
-        let notifications = [];
         let uploadQueue = [];
+        let currentImage = null;
         
         // ============================================
-        // INITIALIZATION
+        // UTILITY FUNCTIONS
         // ============================================
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="toast-close">&times;</button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+            
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            });
+        }
         
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 DST Gallery Initializing...');
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Check authentication
-            await checkAuth();
-            
-            // Load initial data
-            await loadInitialData();
-            
-            // Setup routing
-            setupRouting();
-            
-            console.log('✅ DST Gallery Ready!');
-        });
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.body.style.overflow = '';
+        }
+        
+        async function requireAuth(action = 'perform this action') {
+            if (!currentUser) {
+                showToast(`Please sign in to ${action}`, 'error');
+                openModal('authModal');
+                return false;
+            }
+            return true;
+        }
         
         // ============================================
         // AUTHENTICATION FUNCTIONS
         // ============================================
-        
         async function checkAuth() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error) {
-                console.error('Auth error:', error);
-                showAuthModal();
-                return;
-            }
+            const { data: { session } } = await supabase.auth.getSession();
             
             if (session) {
                 currentUser = session.user;
                 console.log('✅ User authenticated:', currentUser.email);
-                
-                // Load user profile
                 await loadUserProfile();
-                
-                // Update UI for logged in user
                 updateUIForAuth();
             } else {
-                showAuthModal();
-            }
-        }
-        
-        async function loadUserProfile() {
-            if (!currentUser) return;
-            
-            try {
-                // First, check if user profile exists
-                const { data: profile, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
-                
-                if (error) {
-                    // Profile doesn't exist, create one
-                    await createUserProfile();
-                } else {
-                    // Update UI with profile data
-                    updateProfileUI(profile);
-                }
-            } catch (error) {
-                console.error('Error loading profile:', error);
-            }
-        }
-        
-        async function createUserProfile() {
-            const username = currentUser.email.split('@')[0];
-            const displayName = username.charAt(0).toUpperCase() + username.slice(1);
-            
-            const { error } = await supabase
-                .from('users')
-                .insert([
-                    {
-                        id: currentUser.id,
-                        email: currentUser.email,
-                        username: username,
-                        display_name: displayName,
-                        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6c63ff&color=fff`,
-                        created_at: new Date().toISOString()
-                    }
-                ]);
-            
-            if (error) {
-                console.error('Error creating profile:', error);
-            } else {
-                console.log('✅ User profile created');
-                await loadUserProfile();
+                updateUIForGuest();
             }
         }
         
@@ -2196,7 +1878,7 @@
             closeModal('authModal');
             showToast('Welcome back!', 'success');
             
-            // Reload page data
+            // Reload current page
             await loadPageData(currentPage);
         }
         
@@ -2204,16 +1886,9 @@
             const username = document.getElementById('signupUsername').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
             
-            // Validation
-            if (!username || !email || !password || !confirmPassword) {
+            if (!username || !email || !password) {
                 showToast('Please fill all fields', 'error');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                showToast('Passwords do not match', 'error');
                 return;
             }
             
@@ -2264,20 +1939,19 @@
                     }
                 ]);
             
-            if (profileError) {
+            if (profileError && !profileError.message.includes('duplicate key')) {
                 console.error('Profile creation error:', profileError);
             }
             
             showToast('Account created successfully! You can now login.', 'success');
             
             // Switch to login tab
-            document.querySelector('[data-switch="login"]').click();
+            document.querySelector('[data-tab="login"]').click();
             
             // Clear form
             document.getElementById('signupUsername').value = '';
             document.getElementById('signupEmail').value = '';
             document.getElementById('signupPassword').value = '';
-            document.getElementById('signupConfirmPassword').value = '';
         }
         
         async function handleLogout() {
@@ -2287,16 +1961,54 @@
         }
         
         // ============================================
-        // UI FUNCTIONS
+        // PROFILE FUNCTIONS
         // ============================================
-        
-        function updateUIForAuth() {
-            // Update user avatar
-            if (currentUser) {
-                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.email)}&background=6c63ff&color=fff`;
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            
+            try {
+                const { data: profile, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
                 
-                // Hide auth modal if open
-                closeModal('authModal');
+                if (error) {
+                    // Profile doesn't exist, create one
+                    await createUserProfile();
+                    return;
+                }
+                
+                updateProfileUI(profile);
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+        
+        async function createUserProfile() {
+            const email = currentUser.email;
+            const username = currentUser.user_metadata?.username || email.split('@')[0];
+            const displayName = currentUser.user_metadata?.display_name || username;
+            
+            const { error } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        id: currentUser.id,
+                        email: email,
+                        username: username,
+                        display_name: displayName,
+                        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6c63ff&color=fff`,
+                        created_at: new Date().toISOString()
+                    }
+                ]);
+            
+            if (error) {
+                console.error('Error creating profile:', error);
+            } else {
+                console.log('✅ User profile created');
+                await loadUserProfile();
             }
         }
         
@@ -2304,131 +2016,167 @@
             if (!profile) return;
             
             // Update header avatar
-            document.getElementById('userAvatar').src = profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name || profile.username)}&background=6c63ff&color=fff`;
+            if (profile.avatar_url && profile.avatar_url.includes('supabase.co')) {
+                document.getElementById('userAvatar').src = profile.avatar_url;
+            } else {
+                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.display_name || profile.username)}&background=6c63ff&color=fff`;
+            }
             
             // Update profile page if open
             document.getElementById('profileDisplayName').textContent = profile.display_name || profile.username;
             document.getElementById('profileUsername').textContent = `@${profile.username}`;
-            document.getElementById('profileBio').textContent = profile.bio || 'No bio yet. Click edit to add a bio.';
+            document.getElementById('profileBio').textContent = profile.bio || 'No bio yet';
             
-            // Update stats
-            document.getElementById('statImages').textContent = profile.images_count || 0;
-            document.getElementById('statAlbums').textContent = profile.albums_count || 0;
-            document.getElementById('statFollowers').textContent = profile.followers_count || 0;
-            document.getElementById('statFollowing').textContent = profile.following_count || 0;
-            document.getElementById('statLikes').textContent = profile.total_likes_received || 0;
+            // Update profile images
+            if (profile.avatar_url && profile.avatar_url.includes('supabase.co')) {
+                document.getElementById('profileAvatarLarge').src = profile.avatar_url;
+            }
             
-            // Update sidebar counts
-            document.getElementById('myImagesCount').textContent = profile.images_count || 0;
-            document.getElementById('myAlbumsCount').textContent = profile.albums_count || 0;
+            if (profile.banner_url && profile.banner_url.includes('supabase.co')) {
+                document.getElementById('profileBanner').style.backgroundImage = `url('${profile.banner_url}')`;
+                document.getElementById('profileBanner').style.backgroundSize = 'cover';
+                document.getElementById('profileBanner').style.backgroundPosition = 'center';
+            }
+            
+            // Populate edit form
+            document.getElementById('editDisplayName').value = profile.display_name || '';
+            document.getElementById('editUsername').value = profile.username || '';
+            document.getElementById('editBio').value = profile.bio || '';
         }
         
-        function showAuthModal() {
-            openModal('authModal');
-        }
-        
-        function showToast(message, type = 'info') {
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerHTML = `
-                <div class="toast-content">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                    <span>${message}</span>
-                </div>
-                <button class="toast-close">&times;</button>
-            `;
+        async function updateProfile() {
+            if (!currentUser) {
+                showToast('Please sign in to update profile', 'error');
+                return;
+            }
             
-            // Add to page
-            document.body.appendChild(toast);
+            const displayName = document.getElementById('editDisplayName').value.trim();
+            const username = document.getElementById('editUsername').value.trim();
+            const bio = document.getElementById('editBio').value.trim();
             
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 300);
-            }, 5000);
+            // Validation
+            if (!username) {
+                showToast('Username is required', 'error');
+                return;
+            }
             
-            // Close button
-            toast.querySelector('.toast-close').addEventListener('click', () => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 300);
-            });
-        }
-        
-        // ============================================
-        // MODAL FUNCTIONS
-        // ============================================
-        
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+            // Check if username is already taken by another user
+            const { data: existingUser } = await supabase
+                .from('users')
+                .select('id')
+                .eq('username', username)
+                .neq('id', currentUser.id)
+                .single();
+            
+            if (existingUser) {
+                showToast('Username already taken', 'error');
+                return;
+            }
+            
+            // Prepare update data
+            const updateData = {
+                display_name: displayName || username,
+                username: username,
+                bio: bio,
+                updated_at: new Date().toISOString()
+            };
+            
+            // Handle avatar upload
+            const avatarFile = document.getElementById('editAvatar').files[0];
+            if (avatarFile) {
+                const avatarUrl = await uploadProfileImage(avatarFile, 'avatar');
+                if (avatarUrl) {
+                    updateData.avatar_url = avatarUrl;
+                }
+            }
+            
+            // Handle banner upload
+            const bannerFile = document.getElementById('editBanner').files[0];
+            if (bannerFile) {
+                const bannerUrl = await uploadProfileImage(bannerFile, 'banner');
+                if (bannerUrl) {
+                    updateData.banner_url = bannerUrl;
+                }
+            }
+            
+            try {
+                // Update user profile
+                const { error } = await supabase
+                    .from('users')
+                    .update(updateData)
+                    .eq('id', currentUser.id);
+                
+                if (error) throw error;
+                
+                // Update auth metadata
+                await supabase.auth.updateUser({
+                    data: {
+                        username: username,
+                        display_name: displayName || username,
+                        avatar_url: updateData.avatar_url
+                    }
+                });
+                
+                // Close modal
+                closeModal('editProfileModal');
+                
+                // Show success message
+                showToast('Profile updated successfully!', 'success');
+                
+                // Clear file inputs
+                document.getElementById('editAvatar').value = '';
+                document.getElementById('editBanner').value = '';
+                
+                // Reload profile data
+                await loadUserProfile();
+                
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showToast('Error updating profile: ' + error.message, 'error');
             }
         }
         
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        function closeAllModals() {
-            document.querySelectorAll('.modal-overlay.active').forEach(modal => {
-                modal.classList.remove('active');
-            });
-            document.body.style.overflow = '';
-        }
-        
-        // ============================================
-        // PAGE LOADING FUNCTIONS
-        // ============================================
-        
-        async function loadInitialData() {
-            // Load popular tags
-            await loadPopularTags();
+        async function uploadProfileImage(file, type = 'avatar') {
+            if (!currentUser) return null;
             
-            // Load home page images
-            await loadHomeImages();
-        }
-        
-        async function loadPageData(page) {
-            switch(page) {
-                case 'home':
-                    await loadHomeImages();
-                    break;
-                case 'profile':
-                    await loadUserProfileData();
-                    break;
-                case 'foryou':
-                    await loadForYouContent();
-                    break;
-                case 'albums':
-                    await loadUserAlbums();
-                    break;
-                case 'explore':
-                    await loadExploreContent();
-                    break;
-                case 'trending':
-                    await loadTrendingImages();
-                    break;
-                case 'new':
-                    await loadNewImages();
-                    break;
-                case 'popular':
-                    await loadPopularImages();
-                    break;
+            try {
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `profiles/${currentUser.id}/${type}_${Date.now()}.${fileExt}`;
+                
+                // Upload to Supabase Storage
+                const { error: uploadError } = await supabase.storage
+                    .from('gallery-images')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+                
+                if (uploadError) throw uploadError;
+                
+                // Get public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('gallery-images')
+                    .getPublicUrl(fileName);
+                
+                return publicUrl;
+            } catch (error) {
+                console.error(`Error uploading ${type}:`, error);
+                return null;
             }
         }
         
+        // ============================================
+        // IMAGE FUNCTIONS
+        // ============================================
         async function loadHomeImages() {
             const grid = document.getElementById('homeImagesGrid');
-            grid.innerHTML = '';
+            const loading = document.getElementById('homeLoading');
+            const noImages = document.getElementById('noImagesMessage');
             
-            // Show loading
-            document.getElementById('homeLoading').classList.remove('hidden');
+            grid.innerHTML = '';
+            loading.classList.remove('hidden');
+            noImages.classList.add('hidden');
             
             try {
                 // Fetch public images
@@ -2445,17 +2193,20 @@
                 
                 if (error) throw error;
                 
-                // Hide loading
-                document.getElementById('homeLoading').classList.add('hidden');
+                loading.classList.add('hidden');
                 
-                // Render images
+                if (!images || images.length === 0) {
+                    noImages.classList.remove('hidden');
+                    return;
+                }
+                
                 images.forEach(image => {
                     const imageCard = createImageCard(image);
                     grid.appendChild(imageCard);
                 });
             } catch (error) {
                 console.error('Error loading images:', error);
-                document.getElementById('homeLoading').innerHTML = '<p>Error loading images. Please try again.</p>';
+                loading.innerHTML = '<p>Error loading images. Please try again.</p>';
             }
         }
         
@@ -2485,9 +2236,6 @@
                         <button class="action-btn download-btn" title="Download">
                             <i class="fas fa-download"></i>
                         </button>
-                        <button class="action-btn share-btn" title="Share">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
                     </div>
                 </div>
                 <div class="image-stats">
@@ -2499,17 +2247,13 @@
                         <i class="fas fa-eye"></i>
                         <span>${image.views_count || 0}</span>
                     </div>
-                    <div class="stat">
-                        <i class="fas fa-comment"></i>
-                        <span>${image.comments_count || 0}</span>
-                    </div>
                 </div>
             `;
             
-            // Add click event to open image modal
-            card.addEventListener('click', (e) => {
+            // Add click event to view image
+            card.addEventListener('click', async (e) => {
                 if (!e.target.closest('.image-actions')) {
-                    openImageModal(image);
+                    await viewImage(image);
                 }
             });
             
@@ -2517,7 +2261,7 @@
             const likeBtn = card.querySelector('.like-btn');
             likeBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                await toggleLike(image.id);
+                await toggleLike(image.id, likeBtn);
             });
             
             // Add download button event
@@ -2527,101 +2271,18 @@
                 await downloadImage(image);
             });
             
-            // Add share button event
-            const shareBtn = card.querySelector('.share-btn');
-            shareBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                shareImage(image);
-            });
-            
             return card;
         }
         
-        async function loadPopularTags() {
-            try {
-                const { data: tags, error } = await supabase
-                    .from('tags')
-                    .select('*')
-                    .order('images_count', { ascending: false })
-                    .limit(10);
-                
-                if (error) throw error;
-                
-                const container = document.getElementById('popularTags');
-                container.innerHTML = '';
-                
-                tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'tag';
-                    tagElement.textContent = `#${tag.name}`;
-                    tagElement.title = tag.description || tag.name;
-                    tagElement.addEventListener('click', () => {
-                        // Navigate to search with this tag
-                        document.getElementById('searchInput').value = tag.name;
-                        performSearch(tag.name);
-                    });
-                    
-                    container.appendChild(tagElement);
-                });
-            } catch (error) {
-                console.error('Error loading tags:', error);
-            }
+        async function viewImage(image) {
+            // In a full implementation, this would open a detailed view
+            showToast(`Viewing: ${image.title}`, 'info');
         }
         
-        // ============================================
-        // IMAGE INTERACTION FUNCTIONS
-        // ============================================
-        
-        async function openImageModal(image) {
-            currentImage = image;
-            
-            // Update modal content
-            document.getElementById('modalImage').src = image.image_url;
-            document.getElementById('imageModalTitle').textContent = image.title;
-            document.getElementById('modalUserName').textContent = image.users?.display_name || 'User';
-            document.getElementById('modalUserUsername').textContent = `@${image.users?.username || 'user'}`;
-            document.getElementById('modalUserAvatar').src = image.users?.avatar_url || 'https://ui-avatars.com/api/?name=User&background=6c63ff&color=fff';
-            document.getElementById('modalDescription').textContent = image.description || 'No description provided.';
-            document.getElementById('modalLikesCount').textContent = image.likes_count || 0;
-            document.getElementById('modalViewsCount').textContent = image.views_count || 0;
-            document.getElementById('modalDownloadsCount').textContent = image.downloads_count || 0;
-            document.getElementById('modalCommentsCount').textContent = image.comments_count || 0;
-            
-            // Load tags
-            await loadImageTags(image.id);
-            
-            // Load comments
-            await loadImageComments(image.id);
-            
-            // Check if user liked this image
-            if (currentUser) {
-                const { data: like } = await supabase
-                    .from('likes')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .eq('image_id', image.id)
-                    .single();
-                
-                const likeBtn = document.getElementById('likeModalBtn');
-                if (like) {
-                    likeBtn.innerHTML = '<i class="fas fa-heart"></i><span>Liked</span>';
-                    likeBtn.classList.add('liked');
-                } else {
-                    likeBtn.innerHTML = '<i class="fas fa-heart"></i><span>Like</span>';
-                    likeBtn.classList.remove('liked');
-                }
-            }
-            
-            // Track view
-            await trackView(image.id);
-            
-            // Open modal
-            openModal('imageModal');
-        }
-        
-        async function toggleLike(imageId) {
+        async function toggleLike(imageId, likeBtn) {
             if (!currentUser) {
-                showAuthModal();
+                showToast('Please sign in to like images', 'error');
+                openModal('authModal');
                 return;
             }
             
@@ -2641,6 +2302,7 @@
                         .delete()
                         .eq('id', existingLike.id);
                     
+                    likeBtn.classList.remove('liked');
                     showToast('Removed like', 'info');
                 } else {
                     // Like
@@ -2654,16 +2316,9 @@
                             }
                         ]);
                     
+                    likeBtn.classList.add('liked');
                     showToast('Liked!', 'success');
                 }
-                
-                // Refresh image data
-                if (currentImage && currentImage.id === imageId) {
-                    await openImageModal(currentImage);
-                }
-                
-                // Refresh home images
-                await loadHomeImages();
                 
             } catch (error) {
                 console.error('Error toggling like:', error);
@@ -2673,7 +2328,8 @@
         
         async function downloadImage(image) {
             if (!currentUser) {
-                showAuthModal();
+                showToast('Please sign in to download images', 'error');
+                openModal('authModal');
                 return;
             }
             
@@ -2689,12 +2345,6 @@
                 // Track download
                 await supabase.rpc('increment_downloads', { image_id: image.id });
                 
-                // Update image stats
-                if (currentImage && currentImage.id === image.id) {
-                    currentImage.downloads_count = (currentImage.downloads_count || 0) + 1;
-                    document.getElementById('modalDownloadsCount').textContent = currentImage.downloads_count;
-                }
-                
                 showToast('Download started', 'success');
                 
             } catch (error) {
@@ -2703,158 +2353,17 @@
             }
         }
         
-        async function trackView(imageId) {
-            if (!currentUser) return;
-            
-            try {
-                await supabase
-                    .from('views')
-                    .insert([
-                        {
-                            user_id: currentUser.id,
-                            image_id: imageId,
-                            viewed_at: new Date().toISOString()
-                        }
-                    ]);
-                
-                // Update view count
-                await supabase.rpc('increment_views', { image_id: imageId });
-                
-            } catch (error) {
-                console.error('Error tracking view:', error);
-            }
-        }
-        
-        async function loadImageTags(imageId) {
-            try {
-                const { data: tags, error } = await supabase
-                    .from('image_tags')
-                    .select(`
-                        tags (name)
-                    `)
-                    .eq('image_id', imageId);
-                
-                if (error) throw error;
-                
-                const container = document.getElementById('modalTags');
-                container.innerHTML = '';
-                
-                tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'tag';
-                    tagElement.textContent = `#${tag.tags.name}`;
-                    container.appendChild(tagElement);
-                });
-            } catch (error) {
-                console.error('Error loading tags:', error);
-            }
-        }
-        
-        async function loadImageComments(imageId) {
-            try {
-                const { data: comments, error } = await supabase
-                    .from('comments')
-                    .select(`
-                        *,
-                        users (username, avatar_url, display_name)
-                    `)
-                    .eq('image_id', imageId)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                const container = document.getElementById('modalComments');
-                container.innerHTML = '';
-                
-                if (comments.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">No comments yet. Be the first to comment!</p>';
-                    return;
-                }
-                
-                comments.forEach(comment => {
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
-                    
-                    const timeAgo = getTimeAgo(comment.created_at);
-                    
-                    commentElement.innerHTML = `
-                        <img src="${comment.users?.avatar_url || 'https://ui-avatars.com/api/?name=User&background=6c63ff&color=fff'}" 
-                             alt="${comment.users?.display_name || 'User'}" 
-                             class="comment-avatar">
-                        <div class="comment-content">
-                            <div class="comment-header">
-                                <span class="comment-author">${comment.users?.display_name || 'User'}</span>
-                                <span class="comment-time">${timeAgo}</span>
-                            </div>
-                            <div class="comment-text">${comment.content}</div>
-                            <div class="comment-actions">
-                                <button class="comment-action like-comment">
-                                    <i class="fas fa-heart"></i>
-                                    <span>${comment.likes_count || 0}</span>
-                                </button>
-                                <button class="comment-action reply-comment">Reply</button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    container.appendChild(commentElement);
-                });
-            } catch (error) {
-                console.error('Error loading comments:', error);
-            }
-        }
-        
-        async function submitComment() {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            
-            const commentInput = document.getElementById('commentInput');
-            const content = commentInput.value.trim();
-            
-            if (!content) {
-                showToast('Please enter a comment', 'error');
-                return;
-            }
-            
-            if (!currentImage) return;
-            
-            try {
-                await supabase
-                    .from('comments')
-                    .insert([
-                        {
-                            image_id: currentImage.id,
-                            user_id: currentUser.id,
-                            content: content,
-                            created_at: new Date().toISOString()
-                        }
-                    ]);
-                
-                // Clear input
-                commentInput.value = '';
-                
-                // Reload comments
-                await loadImageComments(currentImage.id);
-                
-                // Update comment count
-                await supabase.rpc('increment_comments', { image_id: currentImage.id });
-                
-                showToast('Comment posted', 'success');
-                
-            } catch (error) {
-                console.error('Error posting comment:', error);
-                showToast('Error posting comment', 'error');
-            }
-        }
-        
         // ============================================
         // ALBUM FUNCTIONS
         // ============================================
-        
         async function loadUserAlbums() {
             if (!currentUser) return;
+            
+            const grid = document.getElementById('albumsGrid');
+            const loading = document.getElementById('albumsLoading');
+            
+            grid.innerHTML = '';
+            loading.classList.remove('hidden');
             
             try {
                 const { data: albums, error } = await supabase
@@ -2865,26 +2374,16 @@
                 
                 if (error) throw error;
                 
-                const grid = document.getElementById('albumsGrid');
-                grid.innerHTML = '';
+                loading.classList.add('hidden');
                 
-                if (albums.length === 0) {
+                if (!albums || albums.length === 0) {
                     grid.innerHTML = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);">
                             <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
                             <h3>No albums yet</h3>
                             <p>Create your first album to organize your images</p>
-                            <button class="btn btn-primary" id="createAlbumEmptyBtn" style="margin-top: 20px;">
-                                <i class="fas fa-plus"></i>
-                                Create Album
-                            </button>
                         </div>
                     `;
-                    
-                    document.getElementById('createAlbumEmptyBtn').addEventListener('click', () => {
-                        openModal('createAlbumModal');
-                    });
-                    
                     return;
                 }
                 
@@ -2893,7 +2392,7 @@
                     albumCard.className = 'image-card';
                     albumCard.innerHTML = `
                         <div class="image-container">
-                            <img src="${album.cover_image_url || 'https://files.catbox.moe/ml0vld.jpg'}" 
+                            <img src="https://files.catbox.moe/ml0vld.jpg" 
                                  alt="${album.title}"
                                  style="object-fit: cover;">
                             <div class="image-overlay">
@@ -2911,41 +2410,33 @@
                                 <span>${album.images_count || 0}</span>
                             </div>
                             <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>${album.likes_count || 0}</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>${album.views_count || 0}</span>
+                                <i class="fas fa-globe"></i>
+                                <span>${album.is_public ? 'Public' : 'Private'}</span>
                             </div>
                         </div>
                     `;
                     
                     albumCard.addEventListener('click', () => {
-                        // Navigate to album view
-                        alert(`Opening album: ${album.title}`);
-                        // In full implementation, this would open album page
+                        showToast(`Opening album: ${album.title}`, 'info');
                     });
                     
                     grid.appendChild(albumCard);
                 });
             } catch (error) {
                 console.error('Error loading albums:', error);
+                loading.innerHTML = '<p>Error loading albums. Please try again.</p>';
             }
         }
         
         async function createAlbum() {
             if (!currentUser) {
-                showAuthModal();
+                showToast('Please sign in to create albums', 'error');
                 return;
             }
             
             const title = document.getElementById('albumTitle').value.trim();
             const description = document.getElementById('albumDescription').value.trim();
             const privacy = document.getElementById('albumPrivacy').value;
-            const allowComments = document.getElementById('allowComments').checked;
-            const allowDownloads = document.getElementById('allowDownloads').checked;
-            const allowSharing = document.getElementById('allowSharing').checked;
             
             if (!title) {
                 showToast('Please enter album title', 'error');
@@ -2959,12 +2450,8 @@
                         {
                             user_id: currentUser.id,
                             title: title,
-                            slug: title.toLowerCase().replace(/\s+/g, '-'),
                             description: description,
                             is_public: privacy === 'public',
-                            allow_comments: allowComments,
-                            allow_downloads: allowDownloads,
-                            allow_sharing: allowSharing,
                             created_at: new Date().toISOString()
                         }
                     ])
@@ -2972,12 +2459,6 @@
                     .single();
                 
                 if (error) throw error;
-                
-                // Handle cover image upload if provided
-                const coverFile = document.getElementById('albumCover').files[0];
-                if (coverFile) {
-                    await uploadAlbumCover(album.id, coverFile);
-                }
                 
                 closeModal('createAlbumModal');
                 showToast('Album created successfully!', 'success');
@@ -2988,7 +2469,6 @@
                 // Clear form
                 document.getElementById('albumTitle').value = '';
                 document.getElementById('albumDescription').value = '';
-                document.getElementById('albumCover').value = '';
                 
             } catch (error) {
                 console.error('Error creating album:', error);
@@ -2999,10 +2479,10 @@
         // ============================================
         // UPLOAD FUNCTIONS
         // ============================================
-        
         async function handleFileUpload(files) {
             if (!currentUser) {
-                showAuthModal();
+                showToast('Please sign in to upload images', 'error');
+                openModal('authModal');
                 return;
             }
             
@@ -3039,7 +2519,7 @@
                         <div class="upload-preview-info">
                             <div class="upload-preview-name">${file.name}</div>
                             <div class="upload-preview-size">${formatFileSize(file.size)}</div>
-                            <div class="upload-preview-status">Ready</div>
+                            <div class="upload-preview-status status-pending">Ready</div>
                         </div>
                     `;
                     preview.appendChild(previewItem);
@@ -3056,6 +2536,12 @@
         }
         
         async function startUpload() {
+            if (!currentUser) {
+                showToast('Please sign in to upload images', 'error');
+                openModal('authModal');
+                return;
+            }
+            
             if (uploadQueue.length === 0) {
                 showToast('No files to upload', 'warning');
                 return;
@@ -3064,7 +2550,6 @@
             const albumId = document.getElementById('uploadAlbumSelect').value;
             const title = document.getElementById('uploadTitle').value.trim();
             const description = document.getElementById('uploadDescription').value.trim();
-            const privacy = document.querySelector('input[name="privacy"]:checked').value;
             
             if (!albumId) {
                 showToast('Please select an album', 'error');
@@ -3075,10 +2560,6 @@
                 showToast('Please enter a title', 'error');
                 return;
             }
-            
-            // Get tags
-            const tags = Array.from(document.querySelectorAll('#uploadTags .tag'))
-                .map(tag => tag.textContent.replace('#', '').trim());
             
             // Update button to show loading
             const uploadBtn = document.getElementById('startUploadBtn');
@@ -3117,7 +2598,7 @@
                             {
                                 album_id: albumId,
                                 user_id: currentUser.id,
-                                title: title,
+                                title: title || item.file.name.split('.')[0],
                                 description: description,
                                 image_url: publicUrl,
                                 original_filename: item.file.name,
@@ -3133,11 +2614,6 @@
                         updateUploadStatus(item.index, 'error');
                         console.error('Database error:', dbError);
                         continue;
-                    }
-                    
-                    // Add tags
-                    for (const tagName of tags) {
-                        await addTagToImage(image.id, tagName);
                     }
                     
                     updateUploadStatus(item.index, 'success');
@@ -3161,295 +2637,31 @@
             }
         }
         
-        // ============================================
-        // SEARCH FUNCTIONS
-        // ============================================
-        
-        async function performSearch(query) {
-            if (!query.trim()) return;
-            
-            try {
-                const { data: images, error } = await supabase
-                    .from('images')
-                    .select(`
-                        *,
-                        users (username, avatar_url, display_name),
-                        albums (title, is_public)
-                    `)
-                    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-                    .eq('albums.is_public', true)
-                    .limit(50);
-                
-                if (error) throw error;
-                
-                // Update UI with search results
-                const grid = document.getElementById('homeImagesGrid');
-                grid.innerHTML = '';
-                
-                if (images.length === 0) {
-                    grid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);">
-                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
-                            <h3>No results found</h3>
-                            <p>Try searching with different keywords</p>
-                        </div>
-                    `;
-                    return;
+        function updateUploadStatus(index, status) {
+            const previewItems = document.querySelectorAll('.upload-preview-item');
+            if (previewItems[index]) {
+                const statusEl = previewItems[index].querySelector('.upload-preview-status');
+                if (statusEl) {
+                    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    statusEl.className = `upload-preview-status status-${status}`;
                 }
-                
-                images.forEach(image => {
-                    const imageCard = createImageCard(image);
-                    grid.appendChild(imageCard);
-                });
-                
-            } catch (error) {
-                console.error('Search error:', error);
+            }
+            
+            // Update queue item
+            const item = uploadQueue.find(item => item.index === index);
+            if (item) {
+                item.status = status;
             }
         }
         
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        function resetUploadForm() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadPreview').innerHTML = '';
+            document.getElementById('uploadDetails').classList.add('hidden');
+            document.getElementById('uploadTitle').value = '';
+            document.getElementById('uploadDescription').value = '';
+            uploadQueue = [];
         }
-        
-        function getTimeAgo(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const seconds = Math.floor((now - date) / 1000);
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + ' years ago';
-            
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + ' months ago';
-            
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + ' days ago';
-            
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + ' hours ago';
-            
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + ' minutes ago';
-            
-            return Math.floor(seconds) + ' seconds ago';
-        }
-        
-        function shareImage(image) {
-            const url = window.location.href.split('#')[0] + `#image=${image.id}`;
-            const text = `Check out this image on DST Gallery: ${image.title}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: image.title,
-                    text: text,
-                    url: url
-                });
-            } else {
-                // Copy to clipboard
-                navigator.clipboard.writeText(url);
-                showToast('Link copied to clipboard!', 'success');
-            }
-        }
-        
-        // ============================================
-        // EVENT LISTENERS SETUP
-        // ============================================
-        
-        function setupEventListeners() {
-            // Navigation
-            document.querySelectorAll('.nav-link, .sidebar-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = link.dataset.page;
-                    navigateTo(page);
-                });
-            });
-            
-            // User dropdown
-            document.getElementById('userAvatar').addEventListener('click', () => {
-                document.getElementById('userDropdown').classList.toggle('active');
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.dropdown')) {
-                    document.getElementById('userDropdown').classList.remove('active');
-                }
-            });
-            
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-            
-            // Upload button
-            document.getElementById('uploadBtn').addEventListener('click', () => {
-                if (!currentUser) {
-                    showAuthModal();
-                } else {
-                    openModal('uploadModal');
-                }
-            });
-            
-            // File upload
-            document.getElementById('fileUploadArea').addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
-            
-            document.getElementById('fileInput').addEventListener('change', (e) => {
-                handleFileUpload(e.target.files);
-            });
-            
-            // Start upload
-            document.getElementById('startUploadBtn').addEventListener('click', startUpload);
-            
-            // Create album
-            document.getElementById('createAlbumBtn').addEventListener('click', () => {
-                openModal('createAlbumModal');
-            });
-            
-            document.getElementById('saveAlbumBtn').addEventListener('click', createAlbum);
-            
-            // Edit profile
-            document.getElementById('editProfileBtn').addEventListener('click', () => {
-                openModal('editProfileModal');
-            });
-            
-            // Search
-            const searchInput = document.getElementById('searchInput');
-            let searchTimeout;
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    performSearch(e.target.value);
-                }, 500);
-            });
-            
-            // Modal close buttons
-            document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
-                element.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('modal-close') || 
-                        e.target.classList.contains('modal-overlay')) {
-                        const modalId = e.target.dataset.modal || 
-                                      e.target.closest('.modal-overlay').id;
-                        closeModal(modalId);
-                    }
-                });
-            });
-            
-            // Auth forms
-            document.getElementById('loginBtn').addEventListener('click', handleLogin);
-            document.getElementById('signupBtn').addEventListener('click', handleSignup);
-            
-            // Auth tab switching
-            document.querySelectorAll('.auth-tab, [data-switch]').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const tabName = tab.dataset.tab || tab.dataset.switch;
-                    switchAuthTab(tabName);
-                });
-            });
-            
-            // Comment submission
-            document.getElementById('submitCommentBtn').addEventListener('click', submitComment);
-            
-            // Like in modal
-            document.getElementById('likeModalBtn').addEventListener('click', async () => {
-                if (currentImage) {
-                    await toggleLike(currentImage.id);
-                }
-            });
-            
-            // Download in modal
-            document.getElementById('downloadModalBtn').addEventListener('click', async () => {
-                if (currentImage) {
-                    await downloadImage(currentImage);
-                }
-            });
-            
-            // Social sharing
-            document.querySelectorAll('.share-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (currentImage) {
-                        shareImage(currentImage);
-                    }
-                });
-            });
-            
-            // Escape key to close modals
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeAllModals();
-                }
-            });
-        }
-        
-        function switchAuthTab(tabName) {
-            // Update tabs
-            document.querySelectorAll('.auth-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === tabName);
-            });
-            
-            // Update forms
-            document.getElementById('loginForm').classList.toggle('active', tabName === 'login');
-            document.getElementById('loginForm').classList.toggle('hidden', tabName !== 'login');
-            document.getElementById('signupForm').classList.toggle('active', tabName === 'signup');
-            document.getElementById('signupForm').classList.toggle('hidden', tabName !== 'signup');
-        }
-        
-        function setupRouting() {
-            // Handle hash changes
-            window.addEventListener('hashchange', handleHashChange);
-            
-            // Initial hash
-            handleHashChange();
-        }
-        
-        function handleHashChange() {
-            const hash = window.location.hash.substring(1) || 'home';
-            navigateTo(hash);
-        }
-        
-        function navigateTo(page) {
-            // Update active nav links
-            document.querySelectorAll('.nav-link, .sidebar-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.dataset.page === page) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(pageEl => {
-                pageEl.classList.add('hidden');
-            });
-            
-            // Show target page
-            const targetPage = document.getElementById(page + 'Page');
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-                currentPage = page;
-                loadPageData(page);
-            } else {
-                // Default to home
-                document.getElementById('homePage').classList.remove('hidden');
-                currentPage = 'home';
-                loadPageData('home');
-            }
-            
-            // Close sidebar on mobile
-            document.getElementById('sidebar').classList.remove('active');
-        }
-        
-        // ============================================
-        // HELPER FUNCTIONS
-        // ============================================
         
         async function loadAlbumsForUpload() {
             if (!currentUser) return;
@@ -3492,202 +2704,335 @@
             }
         }
         
-        async function addTagToImage(imageId, tagName) {
+        // ============================================
+        // UI FUNCTIONS
+        // ============================================
+        function updateUIForAuth() {
+            // Enable protected buttons
+            document.querySelectorAll('[data-requires-auth]').forEach(btn => {
+                btn.disabled = false;
+            });
+            
+            // Update username in header (if we have it)
+            if (currentUser.user_metadata?.username) {
+                document.getElementById('userAvatar').title = currentUser.user_metadata.username;
+            }
+        }
+        
+        function updateUIForGuest() {
+            // Disable protected buttons
+            document.querySelectorAll('[data-requires-auth]').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Set default avatar
+            document.getElementById('userAvatar').src = 'https://ui-avatars.com/api/?name=Guest&background=6c63ff&color=fff';
+            document.getElementById('userAvatar').title = 'Guest - Click to sign in';
+        }
+        
+        async function loadPageData(page) {
+            switch(page) {
+                case 'home':
+                    await loadHomeImages();
+                    break;
+                case 'profile':
+                    if (currentUser) {
+                        await loadUserProfile();
+                        // Load user's images
+                        await loadUserImages();
+                    }
+                    break;
+                case 'albums':
+                    if (currentUser) {
+                        await loadUserAlbums();
+                    }
+                    break;
+                case 'foryou':
+                    // For now, just show home images
+                    await loadHomeImages();
+                    break;
+            }
+        }
+        
+        async function loadUserImages() {
+            if (!currentUser) return;
+            
+            const grid = document.getElementById('profileImagesGrid');
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading images...</span></div>';
+            
             try {
-                // First, get or create tag
-                let { data: tag } = await supabase
-                    .from('tags')
-                    .select('id')
-                    .eq('name', tagName.toLowerCase())
-                    .single();
+                const { data: images, error } = await supabase
+                    .from('images')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
                 
-                if (!tag) {
-                    const { data: newTag } = await supabase
-                        .from('tags')
-                        .insert([
-                            {
-                                name: tagName.toLowerCase(),
-                                slug: tagName.toLowerCase().replace(/\s+/g, '-'),
-                                created_at: new Date().toISOString()
-                            }
-                        ])
-                        .select()
-                        .single();
-                    tag = newTag;
+                if (error) throw error;
+                
+                grid.innerHTML = '';
+                
+                if (!images || images.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);">
+                            <i class="fas fa-image" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <h3>No images yet</h3>
+                            <p>Upload your first image to get started!</p>
+                        </div>
+                    `;
+                    return;
                 }
                 
-                // Link tag to image
-                await supabase
-                    .from('image_tags')
-                    .insert([
-                        {
-                            image_id: imageId,
-                            tag_id: tag.id
-                        }
-                    ]);
-                
+                images.forEach(image => {
+                    const imageCard = createImageCard(image);
+                    grid.appendChild(imageCard);
+                });
             } catch (error) {
-                console.error('Error adding tag:', error);
+                console.error('Error loading user images:', error);
+                grid.innerHTML = '<p>Error loading images. Please try again.</p>';
             }
         }
         
-        function updateUploadStatus(index, status) {
-            const previewItems = document.querySelectorAll('.upload-preview-item');
-            if (previewItems[index]) {
-                const statusEl = previewItems[index].querySelector('.upload-preview-status');
-                if (statusEl) {
-                    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-                    statusEl.className = `upload-preview-status status-${status}`;
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 DST Gallery Initializing...');
+            
+            // Check authentication
+            await checkAuth();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Setup routing
+            setupRouting();
+            
+            // Load initial data
+            await loadPageData('home');
+            
+            console.log('✅ DST Gallery Ready!');
+        });
+        
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-link, .sidebar-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    
+                    // Check if page requires auth
+                    if (['profile', 'my-images', 'my-albums', 'liked'].includes(page) && !currentUser) {
+                        showToast('Please sign in to access this page', 'error');
+                        openModal('authModal');
+                        return;
+                    }
+                    
+                    navigateTo(page);
+                });
+            });
+            
+            // User dropdown
+            document.getElementById('userAvatar').addEventListener('click', () => {
+                if (!currentUser) {
+                    openModal('authModal');
+                    return;
                 }
-            }
+                document.getElementById('userDropdown').classList.toggle('active');
+            });
             
-            // Update queue item
-            const item = uploadQueue.find(item => item.index === index);
-            if (item) {
-                item.status = status;
-            }
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown')) {
+                    document.getElementById('userDropdown').classList.remove('active');
+                }
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            
+            // Upload button
+            document.getElementById('uploadBtn').addEventListener('click', async () => {
+                if (await requireAuth('upload images')) {
+                    openModal('uploadModal');
+                }
+            });
+            
+            // Create album button
+            document.getElementById('createAlbumBtn').addEventListener('click', async () => {
+                if (await requireAuth('create albums')) {
+                    openModal('createAlbumModal');
+                }
+            });
+            
+            // File upload area
+            document.getElementById('fileUploadArea').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            
+            // File input change
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                handleFileUpload(e.target.files);
+            });
+            
+            // Start upload
+            document.getElementById('startUploadBtn').addEventListener('click', startUpload);
+            
+            // Save album
+            document.getElementById('saveAlbumBtn').addEventListener('click', createAlbum);
+            
+            // Edit profile
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                if (currentUser) {
+                    openModal('editProfileModal');
+                } else {
+                    showToast('Please sign in to edit profile', 'error');
+                    openModal('authModal');
+                }
+            });
+            
+            // Save profile
+            document.getElementById('saveProfileBtn').addEventListener('click', updateProfile);
+            
+            // Auth forms
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            document.getElementById('signupBtn').addEventListener('click', handleSignup);
+            
+            // Auth tab switching
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = tab.dataset.tab;
+                    
+                    // Update tabs
+                    document.querySelectorAll('.auth-tab').forEach(t => {
+                        t.classList.remove('active');
+                        t.style.borderBottom = 'none';
+                        t.style.color = 'var(--text-secondary)';
+                    });
+                    
+                    tab.classList.add('active');
+                    tab.style.borderBottom = '3px solid var(--primary)';
+                    tab.style.color = 'var(--text-primary)';
+                    
+                    // Update forms
+                    document.getElementById('loginForm').classList.toggle('hidden', tabName !== 'login');
+                    document.getElementById('signupForm').classList.toggle('hidden', tabName !== 'signup');
+                });
+            });
+            
+            // Modal close buttons
+            document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
+                element.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-close') || 
+                        e.target.classList.contains('modal-overlay')) {
+                        const modal = e.target.closest('.modal-overlay');
+                        if (modal) {
+                            modal.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    }
+                });
+            });
+            
+            // Search
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (e.target.value.trim()) {
+                        showToast(`Searching for: ${e.target.value}`, 'info');
+                    }
+                }, 500);
+            });
+            
+            // Escape key to close modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeAllModals();
+                }
+            });
+            
+            // Feedback submission
+            document.getElementById('submitFeedbackBtn').addEventListener('click', () => {
+                const type = document.getElementById('feedbackType').value;
+                const subject = document.getElementById('feedbackSubject').value.trim();
+                const message = document.getElementById('feedbackMessage').value.trim();
+                
+                if (!subject || !message) {
+                    showToast('Please fill all fields', 'error');
+                    return;
+                }
+                
+                // In a real app, this would send to a backend
+                showToast('Thank you for your feedback!', 'success');
+                
+                // Clear form
+                document.getElementById('feedbackSubject').value = '';
+                document.getElementById('feedbackMessage').value = '';
+            });
         }
         
-        function resetUploadForm() {
-            // Clear file input
-            document.getElementById('fileInput').value = '';
+        function setupRouting() {
+            // Handle hash changes
+            window.addEventListener('hashchange', handleHashChange);
             
-            // Clear preview
-            document.getElementById('uploadPreview').innerHTML = '';
-            
-            // Hide details
-            document.getElementById('uploadDetails').classList.add('hidden');
-            
-            // Reset form fields
-            document.getElementById('uploadTitle').value = '';
-            document.getElementById('uploadDescription').value = '';
-            document.getElementById('uploadTags').innerHTML = '';
-            
-            // Clear queue
-            uploadQueue = [];
+            // Initial hash
+            handleHashChange();
         }
         
-        // Add some CSS for toast notifications
-        const toastCSS = `
-            .toast {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                border-radius: var(--radius-md);
-                padding: 15px 20px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                min-width: 300px;
-                box-shadow: var(--shadow-xl);
-                z-index: 3000;
-                animation: slideIn 0.3s ease;
-                transform: translateX(0);
-            }
-            
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            .toast.fade-out {
-                animation: fadeOut 0.3s ease forwards;
-            }
-            
-            @keyframes fadeOut {
-                to { opacity: 0; transform: translateX(100%); }
-            }
-            
-            .toast-content {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .toast.success {
-                border-left: 4px solid var(--success);
-            }
-            
-            .toast.error {
-                border-left: 4px solid var(--danger);
-            }
-            
-            .toast.warning {
-                border-left: 4px solid var(--warning);
-            }
-            
-            .toast-close {
-                background: none;
-                border: none;
-                color: var(--text-secondary);
-                cursor: pointer;
-                font-size: 18px;
-                padding: 0 0 0 10px;
-            }
-            
-            .toast-close:hover {
-                color: var(--text-primary);
-            }
-        `;
+        function handleHashChange() {
+            const hash = window.location.hash.substring(1) || 'home';
+            navigateTo(hash);
+        }
         
-        // Add toast CSS to document
-        const style = document.createElement('style');
-        style.textContent = toastCSS;
-        document.head.appendChild(style);
+        function navigateTo(page) {
+            // Update active nav links
+            document.querySelectorAll('.nav-link, .sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === page) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(pageEl => {
+                pageEl.classList.add('hidden');
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById(page + 'Page');
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                currentPage = page;
+                loadPageData(page);
+            } else {
+                // Default to home
+                document.getElementById('homePage').classList.remove('hidden');
+                currentPage = 'home';
+                loadPageData('home');
+            }
+            
+            // Close sidebar on mobile (if needed)
+            document.getElementById('sidebar').classList.remove('active');
+            
+            // Close dropdown
+            document.getElementById('userDropdown').classList.remove('active');
+        }
         
-        // Add CSS for upload status
-        const uploadStatusCSS = `
-            .upload-preview-item {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                padding: 15px;
-                background: var(--bg-secondary);
-                border-radius: var(--radius-md);
-                margin-bottom: 10px;
-                border: 1px solid var(--border-color);
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                currentUser = session.user;
+                loadUserProfile();
+                updateUIForAuth();
+                showToast('Welcome! You are now signed in.', 'success');
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                updateUIForGuest();
+                showToast('You have been signed out.', 'info');
             }
-            
-            .upload-preview-item img {
-                width: 60px;
-                height: 60px;
-                object-fit: cover;
-                border-radius: var(--radius-sm);
-            }
-            
-            .upload-preview-info {
-                flex: 1;
-            }
-            
-            .upload-preview-name {
-                font-weight: 500;
-                margin-bottom: 5px;
-            }
-            
-            .upload-preview-size {
-                font-size: 12px;
-                color: var(--text-muted);
-                margin-bottom: 5px;
-            }
-            
-            .upload-preview-status {
-                font-size: 12px;
-                font-weight: 500;
-            }
-            
-            .status-pending { color: var(--text-muted); }
-            .status-uploading { color: var(--primary); }
-            .status-success { color: var(--success); }
-            .status-error { color: var(--danger); }
-        `;
-        
-        const uploadStyle = document.createElement('style');
-        uploadStyle.textContent = uploadStatusCSS;
-        document.head.appendChild(uploadStyle);
-        
-        console.log('🎨 DST Gallery - All systems ready!');
+        });
     </script>
 </body>
 </html>
