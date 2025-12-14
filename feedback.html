@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Dian Sybex Tech</title>
+    <meta name="description" content="Share your feedback with Dian Sybex Tech">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ===== Your existing CSS styles (keep all your styles) ===== */
+        /* Add these additional styles for the feedback page */
+        
+        .supabase-connected {
+            background-color: rgba(56, 176, 0, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .supabase-error {
+            background-color: rgba(255, 77, 77, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        /* Add to your existing CSS */
+    </style>
+</head>
+<body>
+    <!-- ===== Header (same as before) ===== -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="Dian Sybex Tech.html" class="logo">Dian™ <span>Sybex Tech</span></a>
+                <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+                <ul class="nav-links">
+                    <li><a href="Dian Sybex Tech.html#home">Home</a></li>
+                    <li><a href="Dian Sybex Tech.html#services">Services</a></li>
+                    <li><a href="feedback.html" class="btn btn-outline">Feedback</a></li>
+                    <li><a href="admin-login.html" class="btn btn-primary">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== Feedback Section ===== -->
+    <section class="section feedback" id="feedback">
+        <div class="container">
+            <div class="section-title">
+                <h2>Your Feedback Matters</h2>
+                <p>We value your opinion and would love to hear about your experience</p>
+            </div>
+            
+            <div class="feedback-container">
+                <div class="feedback-info">
+                    <h3>Share Your Thoughts</h3>
+                    <p>Your feedback helps us improve our services. All feedback is stored securely in our Supabase database.</p>
+                    
+                    <div class="feedback-details">
+                        <div class="feedback-item">
+                            <div class="feedback-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="feedback-text">
+                                <h4>Suggest Improvements</h4>
+                                <p>Tell us how we can serve you better</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feedback-item">
+                            <div class="feedback-icon"><i class="fas fa-heart"></i></div>
+                            <div class="feedback-text">
+                                <h4>Share Your Experience</h4>
+                                <p>Let us know what you liked</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feedback-item">
+                            <div class="feedback-icon"><i class="fas fa-database"></i></div>
+                            <div class="feedback-text">
+                                <h4>Secure Storage</h4>
+                                <p>All feedback stored in Supabase PostgreSQL</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="connectionStatus" class="supabase-connected" style="display: none;">
+                        <i class="fas fa-check-circle"></i> 
+                        <span>Connected to Supabase Database</span>
+                    </div>
+                </div>
+                
+                <div class="feedback-form">
+                    <form id="feedbackForm">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="service">Service Used *</label>
+                            <select id="service" class="form-control" required>
+                                <option value="">Select a service</option>
+                                <option value="web-development">Web Development</option>
+                                <option value="whatsapp-bot">WhatsApp Automation</option>
+                                <option value="tiktok-boosting">TikTok Boosting</option>
+                                <option value="ai-chatbot">AI Chatbots</option>
+                                <option value="ecommerce">E-commerce Solutions</option>
+                                <option value="download-services">Download Services</option>
+                                <option value="hosting">Panel/Server Reselling</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Rate Your Experience *</label>
+                            <div class="rating">
+                                <input type="radio" id="star5" name="rating" value="5">
+                                <label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1">★</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Your Feedback *</label>
+                            <textarea id="message" class="form-control" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <i class="fas fa-spinner fa-spin" id="submitSpinner" style="display: none;"></i>
+                            Submit Feedback
+                        </button>
+                        
+                        <div class="success-message" id="successMessage" style="display: none;">
+                            <i class="fas fa-check-circle"></i> 
+                            <span>Thank you! Your feedback has been saved to our database.</span>
+                        </div>
+                        
+                        <div class="error-message" id="errorMessage" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            <span id="errorText">Error submitting feedback</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Footer (same as before) ===== -->
+    <footer>
+        <!-- Your existing footer content -->
+    </footer>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://lhdqfvjndbyccvubkxsk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZHFmdmpuZGJ5Y2N2dWJreHNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1Mzk1NDcsImV4cCI6MjA4MTExNTU0N30.4up4cheYoEUv9AZF0ATxJ_3LCfS8byCtmwVRfnnS0Eo';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Test connection
+            testSupabaseConnection();
+            
+            // Menu toggle (your existing code)
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+            
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                header.classList.toggle('header-scrolled', window.scrollY > 50);
+            });
+            
+            // Close menu when clicking on a link
+            document.querySelectorAll('.nav-links a').forEach(item => {
+                item.addEventListener('click', () => navLinks.classList.remove('active'));
+            });
+            
+            // Feedback form submission
+            const feedbackForm = document.getElementById('feedbackForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitSpinner = document.getElementById('submitSpinner');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            feedbackForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const service = document.getElementById('service').value;
+                const rating = document.querySelector('input[name="rating"]:checked')?.value;
+                const message = document.getElementById('message').value;
+                
+                // Validate
+                if (!rating) {
+                    showError('Please select a rating');
+                    return;
+                }
+                
+                // Show loading
+                submitBtn.disabled = true;
+                submitSpinner.style.display = 'inline-block';
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                
+                try {
+                    // Insert into Supabase
+                    const { data, error } = await supabase
+                        .from('feedback')
+                        .insert([
+                            {
+                                name: name,
+                                email: email,
+                                service: service,
+                                rating: parseInt(rating),
+                                message: message,
+                                status: 'pending'
+                            }
+                        ]);
+                    
+                    if (error) throw error;
+                    
+                    // Success
+                    successMessage.style.display = 'block';
+                    feedbackForm.reset();
+                    
+                    // Hide success after 5 seconds
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.error('Supabase Error:', error);
+                    showError(error.message || 'Failed to save feedback');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitSpinner.style.display = 'none';
+                }
+            });
+            
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            async function testSupabaseConnection() {
+                try {
+                    const { data, error } = await supabase
+                        .from('feedback')
+                        .select('count', { count: 'exact', head: true });
+                    
+                    if (!error) {
+                        document.getElementById('connectionStatus').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.log('Supabase connection test failed (this is OK for now)');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
