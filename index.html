@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DST Online Gallery</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* Reset and Base Styles */
+        /* Complete CSS - Dark Theme Gallery */
         * {
             margin: 0;
             padding: 0;
@@ -14,89 +15,104 @@
         }
 
         :root {
-            --bg-dark: #1a1a1a;
-            --bg-card: #2a2a2a;
-            --text-light: #f5f5f5;
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --bg-hover: #2a2a2a;
+            --text-light: #ffffff;
             --text-muted: #aaaaaa;
             --accent: #6c63ff;
             --accent-hover: #5a52d5;
-            --danger: #e74c3c;
+            --danger: #ff4757;
             --success: #2ecc71;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --radius: 12px;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-light);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
-        /* Header Styles */
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background-color: rgba(26, 26, 26, 0.9);
+            padding: 1.2rem 3rem;
+            background-color: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
             border-bottom: 1px solid #333;
+            box-shadow: var(--shadow);
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.7rem 1.2rem;
             border-radius: 50px;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .user-profile:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--accent);
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
         }
 
         .username {
             font-weight: 600;
+            font-size: 1.1rem;
         }
 
-        /* Main Gallery Styles */
+        /* Main Gallery */
         .gallery-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
         }
 
         .gallery-viewer {
             position: relative;
-            border-radius: 12px;
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            background-color: var(--bg-card);
-            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            background: var(--bg-card);
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .image-container {
             position: relative;
             width: 100%;
-            height: 70vh;
+            height: 75vh;
             overflow: hidden;
+            background: #000;
         }
 
         .gallery-image {
@@ -110,176 +126,267 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             z-index: 10;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-arrow:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background: rgba(108, 99, 255, 0.9);
             transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.5);
         }
 
         .arrow-left {
-            left: 20px;
+            left: 30px;
         }
 
         .arrow-right {
-            right: 20px;
+            right: 30px;
         }
 
         .progress-bar {
             position: absolute;
             top: 0;
             left: 0;
-            height: 4px;
-            background-color: var(--accent);
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), #ff6b9d);
             width: 0%;
             transition: width 0.1s linear;
             z-index: 5;
+            box-shadow: 0 0 10px var(--accent);
         }
 
         .image-controls {
             display: flex;
             justify-content: space-between;
-            padding: 1rem 2rem;
-            background-color: var(--bg-card);
-            border-top: 1px solid #333;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            background: var(--bg-card);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .control-btn {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            background: none;
-            border: none;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: background-color 0.3s;
+            padding: 1rem 1.8rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
 
         .control-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .control-btn i {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .like-btn.active {
+            background: rgba(255, 71, 87, 0.2);
             color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .like-btn.active:hover {
+            background: rgba(255, 71, 87, 0.3);
+        }
+
+        .image-info {
+            flex: 1;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .image-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .image-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         /* Profile Section */
         .profile-section {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
         }
 
         .profile-header {
-            background-color: var(--bg-card);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
             overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .profile-banner {
-            height: 200px;
+            height: 250px;
             width: 100%;
             object-fit: cover;
+            filter: brightness(0.7);
         }
 
         .profile-info {
-            padding: 1.5rem 2rem;
+            padding: 2rem 3rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
+            position: relative;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid var(--accent);
-            margin-top: -50px;
-            background-color: var(--bg-card);
+            border: 5px solid var(--accent);
+            margin-top: -80px;
+            background: var(--bg-card);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
 
         .profile-details h2 {
+            font-size: 2rem;
             margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--text-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .profile-details p {
             color: var(--text-muted);
-            max-width: 500px;
+            max-width: 600px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .profile-tabs {
             display: flex;
-            border-bottom: 1px solid #333;
-            margin-bottom: 1.5rem;
+            gap: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2.5rem;
         }
 
         .tab {
-            padding: 0.75rem 1.5rem;
+            padding: 1.2rem 2.5rem;
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .tab:hover {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .tab.active {
-            border-bottom: 3px solid var(--accent);
             color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+            background: rgba(108, 99, 255, 0.05);
         }
 
+        /* Albums Grid */
         .albums-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .album-card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s ease;
             cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .album-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent);
         }
 
         .album-cover {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .album-card:hover .album-cover {
+            transform: scale(1.1);
         }
 
         .album-info {
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .album-title {
+            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .album-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
         }
 
         .album-stats {
@@ -287,6 +394,8 @@
             justify-content: space-between;
             color: var(--text-muted);
             font-size: 0.9rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .create-album-card {
@@ -294,23 +403,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: var(--bg-card);
-            border: 2px dashed #444;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 3px dashed rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
             height: 100%;
-            min-height: 250px;
+            min-height: 300px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .create-album-card:hover {
+            background: rgba(108, 99, 255, 0.1);
             border-color: var(--accent);
-            background-color: rgba(108, 99, 255, 0.1);
+            transform: translateY(-5px);
         }
 
         .create-album-card i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .create-album-card div {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .create-album-card:hover i,
+        .create-album-card:hover div {
+            opacity: 1;
             color: var(--accent);
         }
 
@@ -322,10 +445,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal.active {
@@ -333,183 +463,393 @@
         }
 
         .modal-content {
-            background-color: var(--bg-card);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
             width: 90%;
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #333;
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--text-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .close-modal {
-            background: none;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-light);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
 
         .close-modal:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+            transform: rotate(90deg);
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 2rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             font-weight: 600;
+            color: var(--text-light);
         }
 
         .form-input {
             width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
             font-size: 1rem;
+            transition: all 0.3s;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .upload-area {
-            border: 2px dashed #444;
-            border-radius: 8px;
-            padding: 2rem;
+            border: 3px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 3rem 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .upload-area:hover {
             border-color: var(--accent);
-            background-color: rgba(108, 99, 255, 0.05);
+            background: rgba(108, 99, 255, 0.05);
         }
 
         .upload-area i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
             color: var(--accent);
+            opacity: 0.7;
         }
 
         .upload-text {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
+        .upload-subtext {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Buttons */
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
         }
 
         .btn-primary {
-            background-color: var(--accent);
+            background: linear-gradient(45deg, var(--accent), #8a84ff);
             color: white;
+            border: none;
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+            background: linear-gradient(45deg, #5a52d5, #6c63ff);
         }
 
         .btn-secondary {
-            background-color: transparent;
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
-            border: 1px solid #444;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
         }
 
         .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #333;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: flex-end;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
-        /* Responsive Styles */
-        @media (max-width: 768px) {
+        /* Auth Forms */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 1.2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .gallery-container, .profile-section {
+                max-width: 1000px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            header {
+                padding: 1rem 2rem;
+            }
+            
             .image-container {
-                height: 50vh;
+                height: 60vh;
             }
             
             .nav-arrow {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-            
-            .profile-info {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .profile-avatar {
-                margin-top: -80px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
             }
             
             .albums-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             header {
                 padding: 1rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
             }
             
             .username {
                 display: none;
             }
             
-            .image-controls {
-                padding: 1rem;
+            .image-container {
+                height: 50vh;
             }
             
-            .control-btn span {
+            .image-controls {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .control-btn span:not(.count) {
                 display: none;
+            }
+            
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            
+            .profile-avatar {
+                margin-top: -60px;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .albums-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-container, .profile-section {
+                padding: 0 1rem;
+            }
+            
+            .nav-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                left: 15px;
+            }
+            
+            .arrow-right {
+                right: 15px;
             }
             
             .albums-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            margin: 2rem auto;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-message h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-message p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent), #8a84ff);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 20px rgba(108, 99, 255, 0.4);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 10px 30px rgba(108, 99, 255, 0.6);
         }
     </style>
 </head>
@@ -517,27 +857,56 @@
     <!-- Header -->
     <header>
         <div class="logo">DST Gallery</div>
-        <div class="user-profile" id="userProfile">
-            <img src="https://files.catbox.moe/vz7yc2.jpg" alt="User Avatar" class="user-avatar">
-            <span class="username">Dian_sybex_Tech</span>
+        <div class="user-profile" id="userProfile" onclick="toggleUserMenu()">
+            <img src="https://ui-avatars.com/api/?name=Guest&background=6c63ff&color=fff" alt="User Avatar" class="user-avatar" id="userAvatar">
+            <span class="username" id="username">Guest</span>
         </div>
     </header>
 
+    <!-- User Menu Dropdown -->
+    <div class="modal" id="userMenuModal" style="display: none; background: transparent; backdrop-filter: none;">
+        <div class="modal-content" style="position: absolute; top: 80px; right: 30px; width: 250px; max-width: 250px;">
+            <div class="modal-body" style="padding: 0;">
+                <div class="menu-item" onclick="window.location.hash='#profile'" style="padding: 1rem; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    👤 My Profile
+                </div>
+                <div class="menu-item" onclick="showCreateAlbumModal()" style="padding: 1rem; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    ➕ Create Album
+                </div>
+                <div class="menu-item" onclick="showUploadModal()" style="padding: 1rem; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    📤 Upload Image
+                </div>
+                <div class="menu-item" onclick="handleLogout()" style="padding: 1rem; cursor: pointer; color: var(--danger);">
+                    🚪 Logout
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Gallery -->
-    <section class="gallery-container">
-        <div class="gallery-viewer">
+    <section class="gallery-container" id="gallerySection">
+        <div class="welcome-message" id="welcomeMessage">
+            <h2>Welcome to DST Gallery</h2>
+            <p>Discover beautiful artwork from talented artists around the world. Sign up to create your own albums, upload images, and join our creative community.</p>
+            <button class="btn btn-primary" onclick="showAuthModal()" style="padding: 1rem 3rem; font-size: 1.2rem;">
+                Get Started
+            </button>
+        </div>
+
+        <div class="gallery-viewer" id="galleryViewer" style="display: none;">
             <div class="progress-bar" id="progressBar"></div>
             <div class="image-container">
                 <img src="https://files.catbox.moe/ml0vld.jpg" alt="Gallery Image" class="gallery-image" id="galleryImage">
-                <button class="nav-arrow arrow-left" id="prevBtn">&#10094;</button>
-                <button class="nav-arrow arrow-right" id="nextBtn">&#10095;</button>
+                <button class="nav-arrow arrow-left" id="prevBtn">❮</button>
+                <button class="nav-arrow arrow-right" id="nextBtn">❯</button>
             </div>
             <div class="image-controls">
                 <button class="control-btn like-btn" id="likeBtn">
-                    <i>♥</i> <span id="likeCount">247</span>
+                    <i>♥</i> <span class="count" id="likeCount">0</span>
                 </button>
-                <div class="control-btn">
-                    <i>👁</i> <span id="viewCount">1.2K</span>
+                <div class="image-info">
+                    <div class="image-title" id="imageTitle">Loading...</div>
+                    <div class="image-description" id="imageDescription">From the community gallery</div>
                 </div>
                 <button class="control-btn" id="downloadBtn">
                     <i>⬇</i> <span>Download</span>
@@ -547,218 +916,869 @@
     </section>
 
     <!-- Profile Section -->
-    <section class="profile-section">
+    <section class="profile-section" id="profileSection" style="display: none;">
         <div class="profile-header">
-            <img src="https://files.catbox.moe/vz7yc2.jpg" alt="Profile Banner" class="profile-banner">
+            <img src="https://files.catbox.moe/vz7yc2.jpg" alt="Profile Banner" class="profile-banner" id="profileBanner">
             <div class="profile-info">
-                <img src="https://files.catbox.moe/vz7yc2.jpg" alt="Profile Avatar" class="profile-avatar">
+                <img src="https://ui-avatars.com/api/?name=User&background=6c63ff&color=fff" alt="Profile Avatar" class="profile-avatar" id="profileAvatar">
                 <div class="profile-details">
-                    <h2>Dian_sybex_Tech</h2>
-                    <p>Digital artist and photographer exploring the intersection of technology and creativity. Based in Nairobi, Kenya.</p>
+                    <h2 id="profileName">User</h2>
+                    <p id="profileBio">No bio yet. Click edit to add a bio.</p>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value" id="statAlbums">0</div>
+                            <div class="stat-label">Albums</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="statImages">0</div>
+                            <div class="stat-label">Images</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="statLikes">0</div>
+                            <div class="stat-label">Likes</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="profile-tabs">
-            <div class="tab active">My Albums</div>
-            <div class="tab">Liked Images</div>
-            <div class="tab">Settings</div>
+            <div class="tab active" onclick="switchTab('my-albums')">My Albums</div>
+            <div class="tab" onclick="switchTab('liked-images')">Liked Images</div>
+            <div class="tab" onclick="switchTab('settings')">Settings</div>
         </div>
 
-        <div class="albums-grid">
-            <div class="album-card" onclick="viewAlbum(1)">
-                <img src="https://files.catbox.moe/h2159y.jpg" alt="Album Cover" class="album-cover">
-                <div class="album-info">
-                    <div class="album-title">Urban Landscapes</div>
-                    <div class="album-stats">
-                        <span>12 photos</span>
-                        <span>1.5K likes</span>
-                    </div>
-                </div>
-            </div>
-            <div class="album-card" onclick="viewAlbum(2)">
-                <img src="https://files.catbox.moe/l8xvoa.jpg" alt="Album Cover" class="album-cover">
-                <div class="album-info">
-                    <div class="album-title">Abstract Expressions</div>
-                    <div class="album-stats">
-                        <span>8 photos</span>
-                        <span>892 likes</span>
-                    </div>
-                </div>
-            </div>
-            <div class="album-card" onclick="viewAlbum(3)">
-                <img src="https://files.catbox.moe/drjvme.jpg" alt="Album Cover" class="album-cover">
-                <div class="album-info">
-                    <div class="album-title">Nature's Beauty</div>
-                    <div class="album-stats">
-                        <span>15 photos</span>
-                        <span>2.1K likes</span>
-                    </div>
-                </div>
-            </div>
-            <div class="create-album-card" id="createAlbumBtn">
-                <i>+</i>
-                <div>Create New Album</div>
+        <div id="tabContent">
+            <div class="albums-grid" id="albumsGrid">
+                <!-- Albums will be loaded here -->
             </div>
         </div>
     </section>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab" onclick="showCreateAlbumModal()" style="display: none;">
+        +
+    </button>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Join DST Gallery</h3>
+                <button class="close-modal" onclick="closeModal('authModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+                    <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+                </div>
+
+                <div class="error-message" id="authError"></div>
+                <div class="success-message" id="authSuccess"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        Login to DST Gallery
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" onsubmit="handleSignup(event)" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="signupUsername" class="form-input" placeholder="Choose a username" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Create Album Modal -->
     <div class="modal" id="createAlbumModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Create New Album</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
+                <button class="close-modal" onclick="closeModal('createAlbumModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="albumTitle" class="form-label">Album Title</label>
-                    <input type="text" id="albumTitle" class="form-input" placeholder="Enter album title">
+                    <label class="form-label">Album Title</label>
+                    <input type="text" id="albumTitle" class="form-input" placeholder="Enter album title" required>
                 </div>
                 <div class="form-group">
-                    <label for="albumDescription" class="form-label">Description (Optional)</label>
+                    <label class="form-label">Description (Optional)</label>
                     <textarea id="albumDescription" class="form-input" rows="3" placeholder="Describe your album"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Add Images</label>
-                    <div class="upload-area" id="uploadArea">
+                    <label class="form-label">Privacy</label>
+                    <select id="albumPrivacy" class="form-input">
+                        <option value="true">Public (Everyone can view)</option>
+                        <option value="false">Private (Only you can view)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createAlbumModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createAlbum()">Create Album</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Image Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload Image</h3>
+                <button class="close-modal" onclick="closeModal('uploadModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Select Album</label>
+                    <select id="uploadAlbum" class="form-input">
+                        <option value="">Choose an album...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image Title</label>
+                    <input type="text" id="imageTitleInput" class="form-input" placeholder="Enter image title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload Image</label>
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
                         <i>📁</i>
                         <div class="upload-text">Drag & drop images here or click to browse</div>
-                        <div class="btn btn-secondary">Select Files</div>
+                        <div class="upload-subtext">Supports JPG, PNG, GIF up to 10MB</div>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                    <div id="uploadPreview" style="margin-top: 1rem; display: none;">
+                        <img id="previewImage" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                <button class="btn btn-primary" id="createBtn">Create Album</button>
+                <button class="btn btn-secondary" onclick="closeModal('uploadModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="uploadImage()" id="uploadButton">Upload Image</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="modal" id="loadingModal" style="display: none;">
+        <div class="modal-content" style="background: transparent; box-shadow: none; border: none;">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div>Loading...</div>
             </div>
         </div>
     </div>
 
     <script>
-        // Gallery data
-        const galleryImages = [
-            { src: "https://files.catbox.moe/ml0vld.jpg", likes: 247, views: 1200 },
-            { src: "https://files.catbox.moe/h2159y.jpg", likes: 189, views: 950 },
-            { src: "https://files.catbox.moe/l8xvoa.jpg", likes: 312, views: 1500 },
-            { src: "https://files.catbox.moe/drjvme.jpg", likes: 275, views: 1100 },
-            { src: "https://files.catbox.moe/vw9m1k.jpg", likes: 198, views: 870 },
-            { src: "https://files.catbox.moe/fu9n2u.jpg", likes: 401, views: 2100 },
-            { src: "https://files.catbox.moe/qjem3k.jpg", likes: 156, views: 720 },
-            { src: "https://files.catbox.moe/ssuhch.jpg", likes: 289, views: 1300 },
-            { src: "https://files.catbox.moe/pfwygr.bmp", likes: 223, views: 980 }
-        ];
+        // ============================================
+        // SUPABASE CONFIGURATION
+        // ============================================
+        const SUPABASE_URL = 'https://lhdqfvjndbyccvubkxsk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZHFmdmpuZGJ5Y2N2dWJreHNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1Mzk1NDcsImV4cCI6MjA4MTExNTU0N30.4up4cheYoEUv9AZF0ATxJ_3LCfS8byCtmwVRfnnS0Eo';
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // DOM Elements
-        const galleryImage = document.getElementById('galleryImage');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const likeBtn = document.getElementById('likeBtn');
-        const likeCount = document.getElementById('likeCount');
-        const viewCount = document.getElementById('viewCount');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const progressBar = document.getElementById('progressBar');
-        const createAlbumBtn = document.getElementById('createAlbumBtn');
-        const createAlbumModal = document.getElementById('createAlbumModal');
-        const closeModal = document.getElementById('closeModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const createBtn = document.getElementById('createBtn');
-        const uploadArea = document.getElementById('uploadArea');
-
-        // Gallery state
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
+        let currentUser = null;
+        let galleryImages = [];
+        let userAlbums = [];
         let currentIndex = 0;
-        let isLiked = false;
+        let selectedFile = null;
         let autoSwipeInterval;
         let progressInterval;
-        const autoSwipeDelay = 5000; // 5 seconds
+        const autoSwipeDelay = 8000; // 8 seconds per image
 
-        // Initialize gallery
-        function initGallery() {
-            updateGallery();
-            startAutoSwipe();
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Initializing DST Gallery...');
             
-            // Event listeners
-            prevBtn.addEventListener('click', showPrevImage);
-            nextBtn.addEventListener('click', showNextImage);
-            likeBtn.addEventListener('click', toggleLike);
-            downloadBtn.addEventListener('click', downloadImage);
-            createAlbumBtn.addEventListener('click', openCreateAlbumModal);
-            closeModal.addEventListener('click', closeCreateAlbumModal);
-            cancelBtn.addEventListener('click', closeCreateAlbumModal);
-            createBtn.addEventListener('click', createAlbum);
-            uploadArea.addEventListener('click', triggerFileInput);
+            // Check for existing session
+            const { data: { session } } = await supabase.auth.getSession();
             
-            // Pause auto-swipe when user interacts
-            galleryImage.addEventListener('mouseenter', pauseAutoSwipe);
-            galleryImage.addEventListener('mouseleave', resumeAutoSwipe);
+            if (session) {
+                console.log('User session found:', session.user.email);
+                currentUser = session.user;
+                await loadUserProfile();
+                await loadGalleryImages();
+                await loadUserAlbums();
+                showGallery();
+            } else {
+                console.log('No session found, showing welcome screen');
+                showWelcomeScreen();
+            }
             
-            // Keyboard navigation
-            document.addEventListener('keydown', handleKeyPress);
+            setupEventListeners();
+        });
+
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
+        // ============================================
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorElement = document.getElementById('authError');
+            const successElement = document.getElementById('authSuccess');
+            
+            showLoading();
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+            
+            hideLoading();
+            
+            if (error) {
+                errorElement.textContent = error.message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+                return;
+            }
+            
+            currentUser = data.user;
+            successElement.textContent = 'Login successful! Loading your gallery...';
+            successElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            
+            setTimeout(async () => {
+                await loadUserProfile();
+                await loadGalleryImages();
+                await loadUserAlbums();
+                showGallery();
+                closeModal('authModal');
+            }, 1500);
         }
 
-        // Update gallery with current image
+        async function handleSignup(event) {
+            if (event) event.preventDefault();
+            
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const errorElement = document.getElementById('authError');
+            const successElement = document.getElementById('authSuccess');
+            
+            showLoading();
+            
+            // First, sign up with Supabase Auth
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        username: username
+                    }
+                }
+            });
+            
+            if (authError) {
+                hideLoading();
+                errorElement.textContent = authError.message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+                return;
+            }
+            
+            // Create user profile in public.users table
+            const { error: profileError } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        id: authData.user.id,
+                        username: username,
+                        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=6c63ff&color=fff`,
+                        bio: 'Welcome to my gallery!'
+                    }
+                ]);
+            
+            hideLoading();
+            
+            if (profileError) {
+                console.error('Profile creation error:', profileError);
+                errorElement.textContent = 'Account created but profile setup failed. Please contact support.';
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+                return;
+            }
+            
+            successElement.textContent = 'Account created successfully! Please check your email to confirm your account, then login.';
+            successElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            
+            // Clear form
+            document.getElementById('signupUsername').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+            
+            // Switch back to login tab
+            setTimeout(() => {
+                switchAuthTab('login');
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            window.location.reload();
+        }
+
+        // ============================================
+        // USER PROFILE FUNCTIONS
+        // ============================================
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+            
+            if (error) {
+                console.error('Error loading profile:', error);
+                return;
+            }
+            
+            // Update UI
+            document.getElementById('username').textContent = data.username;
+            document.getElementById('profileName').textContent = data.username;
+            
+            if (data.bio) {
+                document.getElementById('profileBio').textContent = data.bio;
+            }
+            
+            if (data.avatar_url) {
+                document.getElementById('userAvatar').src = data.avatar_url;
+                document.getElementById('profileAvatar').src = data.avatar_url;
+            }
+            
+            // Load user stats
+            await loadUserStats();
+        }
+
+        async function loadUserStats() {
+            if (!currentUser) return;
+            
+            // Get album count
+            const { data: albumsData } = await supabase
+                .from('albums')
+                .select('id')
+                .eq('user_id', currentUser.id);
+            
+            // Get total images count
+            const { data: imagesData } = await supabase
+                .from('images')
+                .select('id')
+                .eq('album_id', albumsData?.map(a => a.id) || []);
+            
+            // Get total likes received
+            const { data: likesData } = await supabase
+                .from('images')
+                .select('like_count')
+                .eq('album_id', albumsData?.map(a => a.id) || []);
+            
+            const totalLikes = likesData?.reduce((sum, img) => sum + (img.like_count || 0), 0) || 0;
+            
+            document.getElementById('statAlbums').textContent = albumsData?.length || 0;
+            document.getElementById('statImages').textContent = imagesData?.length || 0;
+            document.getElementById('statLikes').textContent = totalLikes;
+        }
+
+        // ============================================
+        // GALLERY FUNCTIONS
+        // ============================================
+        async function loadGalleryImages() {
+            const { data, error } = await supabase
+                .from('images')
+                .select('*, albums!inner(*)')
+                .order('created_at', { ascending: false })
+                .limit(50);
+            
+            if (error) {
+                console.error('Error loading images:', error);
+                galleryImages = [];
+                return;
+            }
+            
+            galleryImages = data;
+            
+            // Check which images the current user has liked
+            if (currentUser && galleryImages.length > 0) {
+                await checkUserLikes();
+            }
+            
+            if (galleryImages.length > 0) {
+                currentIndex = 0;
+                updateGallery();
+                startAutoSwipe();
+            }
+        }
+
+        async function checkUserLikes() {
+            const imageIds = galleryImages.map(img => img.id);
+            
+            const { data, error } = await supabase
+                .from('likes')
+                .select('image_id')
+                .eq('user_id', currentUser.id)
+                .in('image_id', imageIds);
+            
+            if (error) {
+                console.error('Error checking likes:', error);
+                return;
+            }
+            
+            const likedImageIds = new Set(data.map(like => like.image_id));
+            
+            galleryImages = galleryImages.map(img => ({
+                ...img,
+                user_has_liked: likedImageIds.has(img.id)
+            }));
+        }
+
         function updateGallery() {
-            const currentImage = galleryImages[currentIndex];
-            galleryImage.src = currentImage.src;
-            likeCount.textContent = currentImage.likes;
-            viewCount.textContent = formatViews(currentImage.views);
+            if (galleryImages.length === 0) {
+                document.getElementById('galleryViewer').style.display = 'none';
+                document.getElementById('welcomeMessage').style.display = 'block';
+                return;
+            }
+            
+            const currentImg = galleryImages[currentIndex];
+            
+            // Update image
+            document.getElementById('galleryImage').src = currentImg.image_url;
+            document.getElementById('likeCount').textContent = currentImg.like_count || 0;
+            document.getElementById('imageTitle').textContent = currentImg.title || 'Untitled';
+            document.getElementById('imageDescription').textContent = currentImg.description || 'From the community gallery';
             
             // Update like button state
-            if (isLiked) {
+            const likeBtn = document.getElementById('likeBtn');
+            if (currentImg.user_has_liked) {
                 likeBtn.classList.add('active');
             } else {
                 likeBtn.classList.remove('active');
             }
             
-            // Reset progress bar
-            progressBar.style.width = '0%';
+            // Track view if user is logged in
+            if (currentUser) {
+                trackView(currentImg.id);
+            }
         }
 
-        // Show previous image
+        async function trackView(imageId) {
+            if (!currentUser) return;
+            
+            // Check if user already viewed this image recently
+            const { data: existingView } = await supabase
+                .from('views')
+                .select('id')
+                .eq('user_id', currentUser.id)
+                .eq('image_id', imageId)
+                .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+                .single();
+            
+            if (!existingView) {
+                await supabase
+                    .from('views')
+                    .insert([{ user_id: currentUser.id, image_id: imageId }]);
+                
+                await supabase.rpc('increment_views', { image_id: imageId });
+                
+                // Update local count
+                const currentImg = galleryImages[currentIndex];
+                if (currentImg && currentImg.id === imageId) {
+                    currentImg.view_count = (currentImg.view_count || 0) + 1;
+                }
+            }
+        }
+
+        async function toggleLike() {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            const currentImg = galleryImages[currentIndex];
+            if (!currentImg) return;
+            
+            if (currentImg.user_has_liked) {
+                // Unlike
+                const { error } = await supabase
+                    .from('likes')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('image_id', currentImg.id);
+                
+                if (!error) {
+                    currentImg.user_has_liked = false;
+                    currentImg.like_count = Math.max(0, (currentImg.like_count || 1) - 1);
+                    
+                    await supabase.rpc('decrement_likes', { image_id: currentImg.id });
+                    
+                    updateGallery();
+                }
+            } else {
+                // Like
+                const { error } = await supabase
+                    .from('likes')
+                    .insert([{ user_id: currentUser.id, image_id: currentImg.id }]);
+                
+                if (!error) {
+                    currentImg.user_has_liked = true;
+                    currentImg.like_count = (currentImg.like_count || 0) + 1;
+                    
+                    await supabase.rpc('increment_likes', { image_id: currentImg.id });
+                    
+                    updateGallery();
+                }
+            }
+        }
+
+        function downloadImage() {
+            const currentImg = galleryImages[currentIndex];
+            if (!currentImg) return;
+            
+            const link = document.createElement('a');
+            link.href = currentImg.image_url;
+            link.download = `DST_Gallery_${currentImg.title || 'image'}_${currentImg.id}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Track download
+            if (currentUser) {
+                supabase.rpc('increment_downloads', { image_id: currentImg.id });
+            }
+        }
+
+        // ============================================
+        // ALBUM FUNCTIONS
+        // ============================================
+        async function loadUserAlbums() {
+            if (!currentUser) return;
+            
+            const { data, error } = await supabase
+                .from('albums')
+                .select('*, images(count)')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error loading albums:', error);
+                userAlbums = [];
+                return;
+            }
+            
+            userAlbums = data;
+            renderAlbumsGrid();
+            
+            // Update album dropdown for uploads
+            const albumSelect = document.getElementById('uploadAlbum');
+            albumSelect.innerHTML = '<option value="">Choose an album...</option>';
+            
+            data.forEach(album => {
+                const option = document.createElement('option');
+                option.value = album.id;
+                option.textContent = album.title;
+                albumSelect.appendChild(option);
+            });
+        }
+
+        function renderAlbumsGrid() {
+            const albumsGrid = document.getElementById('albumsGrid');
+            if (!albumsGrid) return;
+            
+            albumsGrid.innerHTML = '';
+            
+            if (userAlbums.length === 0) {
+                albumsGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📁</div>
+                        <h3 style="margin-bottom: 1rem;">No albums yet</h3>
+                        <p>Create your first album to start uploading images!</p>
+                        <button class="btn btn-primary" onclick="showCreateAlbumModal()" style="margin-top: 1.5rem;">
+                            Create Your First Album
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            userAlbums.forEach(album => {
+                const imageCount = album.images?.[0]?.count || 0;
+                const coverImage = album.cover_image_url || 'https://files.catbox.moe/ml0vld.jpg';
+                
+                const albumCard = document.createElement('div');
+                albumCard.className = 'album-card';
+                albumCard.innerHTML = `
+                    <img src="${coverImage}" alt="Album Cover" class="album-cover">
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-description">${album.description || 'No description'}</div>
+                        <div class="album-stats">
+                            <span>${imageCount} image${imageCount !== 1 ? 's' : ''}</span>
+                            <span>${album.is_public ? 'Public' : 'Private'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                albumCard.onclick = () => viewAlbum(album.id);
+                albumsGrid.appendChild(albumCard);
+            });
+            
+            // Add create album card
+            const createCard = document.createElement('div');
+            createCard.className = 'create-album-card';
+            createCard.innerHTML = `
+                <i>+</i>
+                <div>Create New Album</div>
+            `;
+            createCard.onclick = showCreateAlbumModal;
+            albumsGrid.appendChild(createCard);
+        }
+
+        async function createAlbum() {
+            const title = document.getElementById('albumTitle').value;
+            const description = document.getElementById('albumDescription').value;
+            const isPublic = document.getElementById('albumPrivacy').value === 'true';
+            
+            if (!title) {
+                alert('Please enter an album title');
+                return;
+            }
+            
+            showLoading();
+            
+            const { data, error } = await supabase
+                .from('albums')
+                .insert([
+                    {
+                        user_id: currentUser.id,
+                        title,
+                        description,
+                        is_public: isPublic,
+                        cover_image_url: 'https://files.catbox.moe/ml0vld.jpg'
+                    }
+                ])
+                .select()
+                .single();
+            
+            hideLoading();
+            
+            if (error) {
+                console.error('Error creating album:', error);
+                alert('Failed to create album: ' + error.message);
+                return;
+            }
+            
+            userAlbums.unshift(data);
+            renderAlbumsGrid();
+            closeModal('createAlbumModal');
+            
+            // Clear form
+            document.getElementById('albumTitle').value = '';
+            document.getElementById('albumDescription').value = '';
+            
+            // Show success message
+            alert(`Album "${title}" created successfully!`);
+        }
+
+        function viewAlbum(albumId) {
+            alert(`Viewing album ${albumId} - This would show album contents in a real app`);
+            // In a full implementation, this would navigate to album view
+        }
+
+        // ============================================
+        // IMAGE UPLOAD FUNCTIONS
+        // ============================================
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            selectedFile = file;
+            
+            // Show preview
+            const preview = document.getElementById('previewImage');
+            const uploadPreview = document.getElementById('uploadPreview');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                uploadPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Auto-fill title if empty
+            const titleInput = document.getElementById('imageTitleInput');
+            if (!titleInput.value) {
+                titleInput.value = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+            }
+        }
+
+        async function uploadImage() {
+            if (!selectedFile) {
+                alert('Please select an image to upload');
+                return;
+            }
+            
+            const albumId = document.getElementById('uploadAlbum').value;
+            if (!albumId) {
+                alert('Please select an album');
+                return;
+            }
+            
+            const title = document.getElementById('imageTitleInput').value || selectedFile.name;
+            
+            showLoading();
+            
+            try {
+                // Upload to Supabase Storage
+                const fileExt = selectedFile.name.split('.').pop();
+                const fileName = `${currentUser.id}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+                
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('gallery-images')
+                    .upload(fileName, selectedFile);
+                
+                if (uploadError) throw uploadError;
+                
+                // Get public URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('gallery-images')
+                    .getPublicUrl(fileName);
+                
+                // Save to database
+                const { data: imageData, error: dbError } = await supabase
+                    .from('images')
+                    .insert([
+                        {
+                            album_id: albumId,
+                            image_url: publicUrl,
+                            title: title,
+                            description: 'Uploaded by user'
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (dbError) throw dbError;
+                
+                // Add to gallery
+                galleryImages.unshift({
+                    ...imageData,
+                    user_has_liked: false
+                });
+                
+                // Update album cover if it's the first image
+                const album = userAlbums.find(a => a.id === albumId);
+                if (album && (!album.cover_image_url || album.cover_image_url.includes('catbox'))) {
+                    await supabase
+                        .from('albums')
+                        .update({ cover_image_url: publicUrl })
+                        .eq('id', albumId);
+                }
+                
+                hideLoading();
+                closeModal('uploadModal');
+                
+                // Reset form
+                document.getElementById('fileInput').value = '';
+                document.getElementById('imageTitleInput').value = '';
+                document.getElementById('uploadPreview').style.display = 'none';
+                selectedFile = null;
+                
+                // Show success and reload data
+                alert('Image uploaded successfully!');
+                await loadUserAlbums();
+                updateGallery();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Upload error:', error);
+                alert('Failed to upload image: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // UI CONTROL FUNCTIONS
+        // ============================================
+        function showGallery() {
+            document.getElementById('welcomeMessage').style.display = 'none';
+            document.getElementById('galleryViewer').style.display = 'block';
+            document.getElementById('profileSection').style.display = 'block';
+            document.getElementById('fab').style.display = 'flex';
+        }
+
+        function showWelcomeScreen() {
+            document.getElementById('welcomeMessage').style.display = 'block';
+            document.getElementById('galleryViewer').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('fab').style.display = 'none';
+        }
+
         function showPrevImage() {
+            if (galleryImages.length === 0) return;
             currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
             updateGallery();
             resetAutoSwipe();
         }
 
-        // Show next image
         function showNextImage() {
+            if (galleryImages.length === 0) return;
             currentIndex = (currentIndex + 1) % galleryImages.length;
             updateGallery();
             resetAutoSwipe();
         }
 
-        // Toggle like status
-        function toggleLike() {
-            isLiked = !isLiked;
-            if (isLiked) {
-                galleryImages[currentIndex].likes++;
-            } else {
-                galleryImages[currentIndex].likes--;
-            }
-            updateGallery();
-        }
-
-        // Download current image
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.href = galleryImages[currentIndex].src;
-            link.download = `DST_Gallery_Image_${currentIndex + 1}.jpg`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Format view count
-        function formatViews(views) {
-            if (views >= 1000) {
-                return (views / 1000).toFixed(1) + 'K';
-            }
-            return views.toString();
-        }
-
         // Auto-swipe functionality
         function startAutoSwipe() {
+            if (galleryImages.length <= 1) return;
+            
+            pauseAutoSwipe();
+            
             let progress = 0;
             const progressStep = 100 / (autoSwipeDelay / 100);
             
@@ -768,7 +1788,7 @@
             
             progressInterval = setInterval(() => {
                 progress += progressStep;
-                progressBar.style.width = `${progress}%`;
+                document.getElementById('progressBar').style.width = `${progress}%`;
             }, 100);
         }
 
@@ -786,58 +1806,155 @@
             resumeAutoSwipe();
         }
 
-        // Keyboard navigation
-        function handleKeyPress(e) {
-            if (e.key === 'ArrowLeft') {
-                showPrevImage();
-            } else if (e.key === 'ArrowRight') {
-                showNextImage();
-            } else if (e.key === ' ') {
-                // Spacebar toggles like
-                e.preventDefault();
-                toggleLike();
-            }
+        // Modal functions
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('active');
         }
 
-        // Album creation modal
-        function openCreateAlbumModal() {
-            createAlbumModal.classList.add('active');
-        }
-
-        function closeCreateAlbumModal() {
-            createAlbumModal.classList.remove('active');
-        }
-
-        function createAlbum() {
-            const title = document.getElementById('albumTitle').value;
-            const description = document.getElementById('albumDescription').value;
-            
-            if (!title) {
-                alert('Please enter an album title');
+        function showCreateAlbumModal() {
+            if (!currentUser) {
+                showAuthModal();
                 return;
             }
+            document.getElementById('createAlbumModal').classList.add('active');
+        }
+
+        function showUploadModal() {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const authTabs = document.querySelectorAll('.auth-tab');
             
-            // In a real app, you would send this data to a server
-            alert(`Album "${title}" created successfully!`);
-            closeCreateAlbumModal();
+            authTabs.forEach(t => t.classList.remove('active'));
             
-            // Reset form
-            document.getElementById('albumTitle').value = '';
-            document.getElementById('albumDescription').value = '';
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                authTabs[0].classList.add('active');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                authTabs[1].classList.add('active');
+            }
+            
+            // Clear messages
+            document.getElementById('authError').style.display = 'none';
+            document.getElementById('authSuccess').style.display = 'none';
         }
 
-        function triggerFileInput() {
-            // In a real app, this would create a file input element
-            alert('File upload dialog would open here');
+        function toggleUserMenu() {
+            const modal = document.getElementById('userMenuModal');
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'block';
+                // Close menu when clicking outside
+                setTimeout(() => {
+                    document.addEventListener('click', function closeMenu(e) {
+                        if (!e.target.closest('#userProfile') && !e.target.closest('#userMenuModal')) {
+                            modal.style.display = 'none';
+                            document.removeEventListener('click', closeMenu);
+                        }
+                    });
+                }, 100);
+            }
         }
 
-        function viewAlbum(albumId) {
-            alert(`Viewing album with ID: ${albumId}`);
-            // In a real app, this would navigate to the album view
+        function switchTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // In a full implementation, this would switch tab content
+            alert(`Switching to ${tabName} tab - This would load different content in a real app`);
         }
 
-        // Initialize the gallery when the page loads
-        document.addEventListener('DOMContentLoaded', initGallery);
+        function showLoading() {
+            document.getElementById('loadingModal').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingModal').style.display = 'none';
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        function setupEventListeners() {
+            // Gallery navigation
+            document.getElementById('prevBtn').addEventListener('click', showPrevImage);
+            document.getElementById('nextBtn').addEventListener('click', showNextImage);
+            
+            // Image controls
+            document.getElementById('likeBtn').addEventListener('click', toggleLike);
+            document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') showPrevImage();
+                if (e.key === 'ArrowRight') showNextImage();
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    toggleLike();
+                }
+                if (e.key === 'Escape') {
+                    closeModal('authModal');
+                    closeModal('createAlbumModal');
+                    closeModal('uploadModal');
+                }
+            });
+            
+            // Auto-swipe pause/resume
+            const galleryImage = document.getElementById('galleryImage');
+            if (galleryImage) {
+                galleryImage.addEventListener('mouseenter', pauseAutoSwipe);
+                galleryImage.addEventListener('mouseleave', resumeAutoSwipe);
+            }
+            
+            // Drag and drop for upload
+            const uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = 'var(--accent)';
+                    uploadArea.style.background = 'rgba(108, 99, 255, 0.1)';
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.style.borderColor = '';
+                    uploadArea.style.background = '';
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.borderColor = '';
+                    uploadArea.style.background = '';
+                    
+                    if (e.dataTransfer.files.length) {
+                        const fileInput = document.getElementById('fileInput');
+                        fileInput.files = e.dataTransfer.files;
+                        handleFileSelect({ target: fileInput });
+                    }
+                });
+            }
+        }
+
+        // ============================================
+        // INITIAL SETUP COMPLETE
+        // ============================================
+        console.log('DST Gallery initialized successfully!');
+        console.log('Supabase URL:', SUPABASE_URL);
     </script>
 </body>
 </html>
