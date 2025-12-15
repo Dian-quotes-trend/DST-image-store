@@ -1824,6 +1824,9 @@
         function closeAllModals() {
             document.querySelectorAll('.modal-overlay.active').forEach(modal => {
                 modal.classList.remove('active');
+                if (modal.id === 'uploadModal') {
+                    resetUploadForm();
+                }
             });
             document.body.style.overflow = '';
         }
@@ -2463,12 +2466,15 @@
                 closeModal('createAlbumModal');
                 showToast('Album created successfully!', 'success');
                 
-                // Reload albums
-                await loadUserAlbums();
+                // Reload albums in the upload modal if it's open
+                if (document.getElementById('uploadModal').classList.contains('active')) {
+                    await loadAlbumsForUpload();
+                }
                 
-                // Clear form
-                document.getElementById('albumTitle').value = '';
-                document.getElementById('albumDescription').value = '';
+                // Reload albums page if we are on it
+                if (currentPage === 'albums') {
+                    await loadUserAlbums();
+                }
                 
             } catch (error) {
                 console.error('Error creating album:', error);
@@ -2660,7 +2666,13 @@
             document.getElementById('uploadDetails').classList.add('hidden');
             document.getElementById('uploadTitle').value = '';
             document.getElementById('uploadDescription').value = '';
+            document.getElementById('uploadAlbumSelect').value = '';
             uploadQueue = [];
+            
+            // Reset button state
+            const uploadBtn = document.getElementById('startUploadBtn');
+            uploadBtn.innerHTML = '<i class="fas fa-upload"></i><span>Upload Images</span>';
+            uploadBtn.disabled = false;
         }
         
         async function loadAlbumsForUpload() {
@@ -2678,12 +2690,14 @@
                 const select = document.getElementById('uploadAlbumSelect');
                 select.innerHTML = '<option value="">Select album or create new</option>';
                 
-                albums.forEach(album => {
-                    const option = document.createElement('option');
-                    option.value = album.id;
-                    option.textContent = album.title;
-                    select.appendChild(option);
-                });
+                if (albums && albums.length > 0) {
+                    albums.forEach(album => {
+                        const option = document.createElement('option');
+                        option.value = album.id;
+                        option.textContent = album.title;
+                        select.appendChild(option);
+                    });
+                }
                 
                 // Add option to create new album
                 const newOption = document.createElement('option');
@@ -2701,6 +2715,7 @@
                 
             } catch (error) {
                 console.error('Error loading albums:', error);
+                showToast('Error loading albums', 'error');
             }
         }
         
@@ -2850,10 +2865,12 @@
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             
-            // Upload button
+            // Upload button - FIXED VERSION
             document.getElementById('uploadBtn').addEventListener('click', async () => {
                 if (await requireAuth('upload images')) {
                     openModal('uploadModal');
+                    // Load albums when modal opens
+                    await loadAlbumsForUpload();
                 }
             });
             
@@ -2920,7 +2937,7 @@
                 });
             });
             
-            // Modal close buttons
+            // Modal close buttons - FIXED VERSION
             document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
                 element.addEventListener('click', (e) => {
                     if (e.target.classList.contains('modal-close') || 
@@ -2929,6 +2946,11 @@
                         if (modal) {
                             modal.classList.remove('active');
                             document.body.style.overflow = '';
+                            
+                            // Reset upload form if this is the upload modal
+                            if (modal.id === 'uploadModal') {
+                                resetUploadForm();
+                            }
                         }
                     }
                 });
