@@ -57,12 +57,6 @@
             list-style: none;
         }
 
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
         .container {
             width: 100%;
             max-width: 1200px;
@@ -194,10 +188,6 @@
 
         .nav-links a:hover::after {
             width: 100%;
-        }
-
-        .nav-links .btn {
-            margin-left: 1rem;
         }
 
         .menu-toggle {
@@ -334,10 +324,6 @@
             box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
         }
 
-        .form-control.error {
-            border-color: var(--danger);
-        }
-
         textarea.form-control {
             min-height: 150px;
             resize: vertical;
@@ -461,73 +447,6 @@
         .message-icon {
             margin-right: 0.8rem;
             font-size: 1.2rem;
-        }
-
-        /* ===== Testimonials ===== */
-        .testimonials {
-            background-color: var(--dark);
-            padding: 4rem 0;
-        }
-
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .testimonial-card {
-            background-color: var(--dark-light);
-            padding: 2rem;
-            border-radius: 10px;
-            position: relative;
-            border: 1px solid var(--light-gray);
-        }
-
-        .testimonial-card::before {
-            content: '"';
-            font-size: 4rem;
-            color: var(--primary);
-            opacity: 0.2;
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-family: Georgia, serif;
-        }
-
-        .testimonial-content {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 1rem;
-        }
-
-        .author-info h4 {
-            margin-bottom: 0.3rem;
-            font-size: 1rem;
-        }
-
-        .author-info p {
-            color: var(--gray);
-            font-size: 0.9rem;
         }
 
         /* ===== Footer ===== */
@@ -797,18 +716,18 @@
                     
                     <form id="feedbackForm">
                         <div class="form-group">
-                            <label for="name" class="required">Your Name</label>
-                            <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+                            <label for="full_name" class="required">Your Name</label>
+                            <input type="text" id="full_name" class="form-control" placeholder="Enter your full name" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="email" class="required">Email Address</label>
-                            <input type="email" id="email" class="form-control" placeholder="Enter your email address" required>
+                            <label for="email_address" class="required">Email Address</label>
+                            <input type="email" id="email_address" class="form-control" placeholder="Enter your email address" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="service" class="required">Which Service Did You Use?</label>
-                            <select id="service" class="form-control" required>
+                            <label for="service_used" class="required">Which Service Did You Use?</label>
+                            <select id="service_used" class="form-control" required>
                                 <option value="" disabled selected>Select a service</option>
                                 <option value="web-development">Web Development</option>
                                 <option value="whatsapp-bot">WhatsApp Automation</option>
@@ -824,27 +743,42 @@
                         <div class="rating-container">
                             <label class="rating-label required">How would you rate your experience?</label>
                             <div class="rating-stars">
-                                <input type="radio" id="star5" name="rating" value="5" class="rating-input">
+                                <input type="radio" id="star5" name="rating_score" value="5" class="rating-input">
                                 <label for="star5" class="rating-star">★</label>
                                 
-                                <input type="radio" id="star4" name="rating" value="4" class="rating-input">
+                                <input type="radio" id="star4" name="rating_score" value="4" class="rating-input">
                                 <label for="star4" class="rating-star">★</label>
                                 
-                                <input type="radio" id="star3" name="rating" value="3" class="rating-input">
+                                <input type="radio" id="star3" name="rating_score" value="3" class="rating-input">
                                 <label for="star3" class="rating-star">★</label>
                                 
-                                <input type="radio" id="star2" name="rating" value="2" class="rating-input">
+                                <input type="radio" id="star2" name="rating_score" value="2" class="rating-input">
                                 <label for="star2" class="rating-star">★</label>
                                 
-                                <input type="radio" id="star1" name="rating" value="1" class="rating-input">
+                                <input type="radio" id="star1" name="rating_score" value="1" class="rating-input">
                                 <label for="star1" class="rating-star">★</label>
                             </div>
-                            <div class="rating-hint">Click a star to rate</div>
+                            <div class="rating-hint">Click a star to rate (1 = Poor, 5 = Excellent)</div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="message" class="required">Your Feedback</label>
-                            <textarea id="message" class="form-control" placeholder="Please share your experience, suggestions, or any concerns you may have..." required></textarea>
+                            <label for="feedback_message" class="required">Your Feedback</label>
+                            <textarea id="feedback_message" class="form-control" placeholder="Please share your experience, suggestions, or any concerns you may have..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; gap: 1rem;">
+                            <div style="flex: 1;">
+                                <label>
+                                    <input type="checkbox" id="contact_permission" checked style="margin-right: 8px;">
+                                    Allow follow-up contact
+                                </label>
+                            </div>
+                            <div style="flex: 1;">
+                                <label>
+                                    <input type="checkbox" id="is_anonymous" style="margin-right: 8px;">
+                                    Submit anonymously
+                                </label>
+                            </div>
                         </div>
                         
                         <button type="submit" class="submit-btn" id="submitBtn">
@@ -1006,8 +940,20 @@
             const ratingStars = document.querySelectorAll('.rating-star');
             ratingStars.forEach(star => {
                 star.addEventListener('click', function() {
-                    const rating = this.previousElementSibling.value;
-                    console.log('Selected rating:', rating);
+                    // Remove highlight from all stars
+                    ratingStars.forEach(s => s.style.color = '');
+                    
+                    // Highlight selected star and all stars before it
+                    const selectedId = this.getAttribute('for');
+                    const selectedValue = document.getElementById(selectedId).value;
+                    
+                    ratingStars.forEach(s => {
+                        const starId = s.getAttribute('for');
+                        const starValue = document.getElementById(starId).value;
+                        if (starValue <= selectedValue) {
+                            s.style.color = '#ffaa00';
+                        }
+                    });
                 });
             });
             
@@ -1021,15 +967,17 @@
             feedbackForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Get form data
-                const name = document.getElementById('name').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const service = document.getElementById('service').value;
-                const rating = document.querySelector('input[name="rating"]:checked')?.value;
-                const message = document.getElementById('message').value.trim();
+                // Get form data - using new column names
+                const full_name = document.getElementById('full_name').value.trim();
+                const email_address = document.getElementById('email_address').value.trim();
+                const service_used = document.getElementById('service_used').value;
+                const rating_score = document.querySelector('input[name="rating_score"]:checked')?.value;
+                const feedback_message = document.getElementById('feedback_message').value.trim();
+                const contact_permission = document.getElementById('contact_permission').checked;
+                const is_anonymous = document.getElementById('is_anonymous').checked;
                 
                 // Validate form
-                if (!rating) {
+                if (!rating_score) {
                     showError('Please select a rating by clicking on the stars');
                     return;
                 }
@@ -1041,18 +989,20 @@
                 errorMessage.style.display = 'none';
                 
                 try {
-                    // Insert into Supabase
+                    // Insert into Supabase - using NEW 'user_feedback' table
                     const { data, error } = await supabase
-                        .from('feedback')
+                        .from('user_feedback')  // CHANGED TO NEW TABLE NAME
                         .insert([
                             {
-                                name: name,
-                                email: email,
-                                service: service,
-                                rating: parseInt(rating),
-                                message: message,
-                                status: 'pending',
-                                created_at: new Date().toISOString()
+                                full_name: full_name,
+                                email_address: email_address,
+                                service_used: service_used,
+                                rating_score: parseInt(rating_score),
+                                feedback_message: feedback_message,
+                                feedback_status: 'pending',
+                                contact_permission: contact_permission,
+                                is_anonymous: is_anonymous,
+                                submitted_at: new Date().toISOString()
                             }
                         ]);
                     
@@ -1061,6 +1011,9 @@
                     // Success
                     successMessage.style.display = 'block';
                     feedbackForm.reset();
+                    
+                    // Reset star colors
+                    ratingStars.forEach(star => star.style.color = '');
                     
                     // Scroll to success message
                     successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1084,6 +1037,8 @@
                         userMessage = 'Network error. Please check your internet connection.';
                     } else if (error.message.includes('JWT')) {
                         userMessage = 'Authentication error. Please refresh the page.';
+                    } else if (error.message.includes('user_feedback')) {
+                        userMessage = 'Database error. Please contact support.';
                     }
                     
                     showError(userMessage);
@@ -1108,16 +1063,42 @@
             formInputs.forEach(input => {
                 input.addEventListener('blur', function() {
                     if (this.hasAttribute('required') && !this.value.trim()) {
-                        this.classList.add('error');
+                        this.style.borderColor = '#ff4d4d';
                     } else {
-                        this.classList.remove('error');
+                        this.style.borderColor = '';
                     }
                 });
                 
                 input.addEventListener('input', function() {
                     if (this.value.trim()) {
-                        this.classList.remove('error');
+                        this.style.borderColor = '';
                     }
+                });
+            });
+            
+            // Add real-time star preview
+            ratingStars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const hoverId = this.getAttribute('for');
+                    const hoverValue = document.getElementById(hoverId).value;
+                    
+                    // Preview highlight
+                    ratingStars.forEach(s => {
+                        const starId = s.getAttribute('for');
+                        const starValue = document.getElementById(starId).value;
+                        if (starValue <= hoverValue) {
+                            s.style.opacity = '1';
+                        } else {
+                            s.style.opacity = '0.7';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    // Reset preview
+                    ratingStars.forEach(s => {
+                        s.style.opacity = '';
+                    });
                 });
             });
         });
